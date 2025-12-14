@@ -62,11 +62,11 @@
         </div>
     </header>
 
-    <!-- Main POS Layout -->
-    <main class="flex-grow max-w-7xl mx-auto w-full p-4 grid lg:grid-cols-3 gap-6">
+    <!-- Main POS Layout - Updated to flex container for 75/25 distribution on large screens -->
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 flex flex-col lg:flex-row gap-6">
 
-        <!-- Column 1: Categories and Menu Items -->
-        <section class="lg:col-span-2 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
+        <!-- Column 1: Categories and Menu Items - 75% width on large screens -->
+        <section class="w-full lg:w-3/4 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
             <!-- Category Tabs -->
             <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0">
                 <!-- Buttons will be rendered here -->
@@ -78,11 +78,12 @@
             </div>
         </section>
 
-        <!-- Column 2: Order Summary (Cart) -->
-        <section class="lg:col-span-1 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
+        <!-- Column 2: Order Summary (Cart) - 25% width on large screens -->
+        <section class="w-full lg:w-1/4 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
             <!-- Title with Order Number -->
             <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
                 <span>Current Order</span>
+                <!-- UPDATED: Display dynamic order number -->
                 <span id="order-number-display" class="text-lg font-extrabold text-gray-500 bg-gray-100 p-1 rounded">Order #001</span>
             </h2>
 
@@ -106,7 +107,7 @@
                     Clear Order
                 </button>
                 <button onclick="checkout()" class="w-full py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
-                    Process Payment (Checkout)
+                    Checkout
                 </button>
                 <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
             </div>
@@ -191,18 +192,18 @@
         // Menu and Flavors Data
         const MENU = {
             "scoops": [
-                { name: "Single Scoop - Waffle Cone", price: 4.00, scoops: 1, isFlavorRequired: true },
-                { name: "Double Scoop - Waffle Cone", price: 6.00, scoops: 2, isFlavorRequired: true },
-                { name: "Triple Scoop - Waffle Cone", price: 7.50, scoops: 3, isFlavorRequired: true },
+                { name: "Single Cone", price: 4.00, scoops: 1, isFlavorRequired: true },
+                { name: "Double Cone", price: 6.00, scoops: 2, isFlavorRequired: true },
+                { name: "Triple Cone", price: 7.50, scoops: 3, isFlavorRequired: true },
                 
-                { name: "Single Scoop - Cup", price: 3.50, scoops: 1, isFlavorRequired: true },
-                { name: "Double Scoop - Cup", price: 5.50, scoops: 2, isFlavorRequired: true },
-                { name: "Triple Scoop - Cup", price: 7.00, scoops: 3, isFlavorRequired: true },
+                { name: "Single Cup", price: 3.50, scoops: 1, isFlavorRequired: true },
+                { name: "Double Cup", price: 5.50, scoops: 2, isFlavorRequired: true },
+                { name: "Triple Cup", price: 7.00, scoops: 3, isFlavorRequired: true },
 
                 { name: "Banana Split", price: 8.00, scoops: 3, isFlavorRequired: true },
                 // RENAMED AND MODIFIED POP ITEMS - NOW REQUIRE FLAVOR SELECTION (scoops: 1)
-                { name: "Water Ice Pop", price: 2.50, scoops: 1, isFlavorRequired: true }, 
-                { name: "Cream Ice Pop", price: 3.00, scoops: 1, isFlavorRequired: true }
+                { name: "Water Pop", price: 2.50, scoops: 1, isFlavorRequired: true }, 
+                { name: "Cream Pop", price: 3.00, scoops: 1, isFlavorRequired: true }
             ],
             "drinks": [
                 { name: "Coffee", price: 2.00, isFlavorRequired: false },
@@ -238,8 +239,8 @@
 
         // Specific flavor mappings for new items
         const ITEM_FLAVOR_MAPPING = {
-            "Water Ice Pop": ["Grape", "Lime", "Lemon", "Watermelon", "Melon", "Strawberry"],
-            "Cream Ice Pop": ["Mango", "Strawberry", "Cookie", "Vanilla", "Chocolate", "Oreo", "Nut", "Fruit"],
+            "Water Pop": ["Grape", "Lime", "Lemon", "Watermelon", "Melon", "Strawberry"],
+            "Cream Pop": ["Mango", "Strawberry", "Cookie", "Vanilla", "Chocolate", "Oreo", "Nut", "Fruit"],
             "Milkshake": SCOOP_FLAVORS 
         };
 
@@ -258,17 +259,17 @@
         const getPlaceholderUrl = (name) => {
             const base = "https://placehold.co/100x100";
             switch (name) {
-                // SCOOPS
-                case "Single Scoop - Waffle Cone": return `${base}/e74c3c/ffffff?text=1+CONE`;
-                case "Double Scoop - Waffle Cone": return `${base}/e74c3c/ffffff?text=2+CONES`;
-                case "Triple Scoop - Waffle Cone": return `${base}/e74c3c/ffffff?text=3+CONES`;
-                case "Single Scoop - Cup": return `${base}/9b59b6/ffffff?text=1+CUP`;
-                case "Double Scoop - Cup": return `${base}/9b59b6/ffffff?text=2+CUPS`;
-                case "Triple Scoop - Cup": return `${base}/9b59b6/ffffff?text=3+CUPS`;
+                // SCOOPS (Updated names)
+                case "Single Cone": return `${base}/e74c3c/ffffff?text=1+CONE`;
+                case "Double Cone": return `${base}/e74c3c/ffffff?text=2+CONES`;
+                case "Triple Cone": return `${base}/e74c3c/ffffff?text=3+CONES`;
+                case "Single Cup": return `${base}/9b59b6/ffffff?text=1+CUP`;
+                case "Double Cup": return `${base}/9b59b6/ffffff?text=2+CUPS`;
+                case "Triple Cup": return `${base}/9b59b6/ffffff?text=3+CUPS`;
                 case "Banana Split": return `${base}/f8f870/8e44ad?text=SPLIT`;
                 // RENAMED POP ITEMS
-                case "Water Ice Pop": return `${base}/3498db/ffffff?text=WATER+ICE`; 
-                case "Cream Ice Pop": return `${base}/f39c12/ffffff?text=CREAM+ICE`;
+                case "Water Pop": return `${base}/3498db/ffffff?text=WATER+POP`; 
+                case "Cream Pop": return `${base}/f39c12/ffffff?text=CREAM+POP`;
                 // DRINKS
                 case "Coffee": return `${base}/c49a62/ffffff?text=COFFEE`;
                 case "Latte": return `${base}/c49a62/ffffff?text=LATTE`;
@@ -446,7 +447,6 @@
                         <p class="text-sm text-gray-500 mb-2">${categoryKey.slice(0, -1).toUpperCase()}</p>
                         <p class="text-3xl font-extrabold text-primary">${formatCurrency(item.price)}</p>
                     </div>
-                    <!-- REMOVED: The "Click to Add to Order" label was here -->
                 `;
                 itemsContainer.appendChild(itemCard);
             });
@@ -871,10 +871,14 @@
             }, 3000);
         };
         
+        // Helper function for two-digit padding
+        const pad2 = (num) => String(num).padStart(2, '0');
+
         // --- CLOCK AND DATE/TIME LOGIC (NEW) ---
         const updateClock = () => {
             const now = new Date();
             
+            // --- Standard Clock Display ---
             // Format date: Sat, Nov 22, 2025
             const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             const dateString = now.toLocaleDateString('en-US', dateOptions);
@@ -890,17 +894,30 @@
                     <div class="text-xs text-gray-500">${dateString}</div>
                 `;
             }
+
+            // --- Order Number Calculation (01 + YY + MM + DD + HH + MM) ---
+            const year = now.getFullYear() % 100; // Last two digits of year (YY)
+            const month = now.getMonth() + 1; // Month is 0-indexed
+            const day = now.getDate();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+
+            const orderNumber = `01${pad2(year)}${pad2(month)}${pad2(day)}${pad2(hour)}${pad2(minute)}`;
+
+            const orderDisplayElement = document.getElementById('order-number-display');
+            if (orderDisplayElement) {
+                orderDisplayElement.textContent = `Order #${orderNumber}`;
+            }
         };
 
 
         // --- APPLICATION INITIALIZATION ---
         
         // 1. Render static content immediately (Categories and Menu Items)
-        // This fixes the issue of the menu not loading locally while waiting for Firebase auth.
         renderCategories();
         renderMenuItems(window.currentCategory);
         
-        // 2. Start the clock
+        // 2. Start the clock and dynamic order number
         updateClock();
         setInterval(updateClock, 1000);
         
