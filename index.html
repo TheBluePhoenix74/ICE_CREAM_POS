@@ -60,6 +60,12 @@
             text-align: center;
             padding-top: 10px;
         }
+        /* Style for selected payment method button */
+        .payment-method-selected {
+            border: 3px solid #65a30d; /* Lime Green border on selection */
+            box-shadow: 0 0 0 4px rgba(101, 163, 13, 0.4);
+            transform: scale(1.02);
+        }
     </style>
     <!-- === CSS STYLES SECTION END === -->
 </head>
@@ -97,11 +103,11 @@
     <!-- Main Content Container -->
     <main id="app-content" class="flex-grow max-w-7xl mx-auto w-full p-4">
 
-        <!-- POS View Container - FORCED 75/25 distribution on ALL screens -->
+        <!-- POS View Container - FORCED 65/35 distribution on ALL screens -->
         <div id="pos-view" class="flex flex-col sm:flex-row gap-6 h-full">
 
-            <!-- Column 1: Categories and Menu Items - 75% width on ALL screens -->
-            <section class="w-3/4 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
+            <!-- Column 1: Categories and Menu Items - 65% width on ALL screens -->
+            <section class="w-2/3 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
                 <!-- Category Tabs -->
                 <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0">
                     <!-- Buttons will be rendered here -->
@@ -113,8 +119,8 @@
                 </div>
             </section>
 
-            <!-- Column 2: Order Summary (Cart) - 25% width on ALL screens -->
-            <section class="w-1/4 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
+            <!-- Column 2: Order Summary (Cart) - 35% width on ALL screens -->
+            <section class="w-1/3 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
                 <!-- Title with Order Number - UPDATED TO "Order" -->
                 <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
                     <span>Order</span>
@@ -138,12 +144,17 @@
                         <span id="total-amount" class="text-gray-800">$0.00</span>
                     </div>
                     
-                    <button onclick="clearOrder()" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
-                        Clear Order
-                    </button>
-                    <button onclick="checkout()" class="w-full py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
-                        Checkout
-                    </button>
+                    <!-- START OF BUTTON CHANGES (Side-by-side) -->
+                    <div class="flex space-x-2"> 
+                        <button onclick="clearOrder()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
+                            Clear
+                        </button>
+                        <button onclick="checkout()" class="flex-1 py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
+                            Pay
+                        </button>
+                    </div>
+                    <!-- END OF BUTTON CHANGES -->
+                    
                     <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
                 </div>
             </section>
@@ -233,9 +244,49 @@
             <p class="text-sm text-gray-500 mt-4">Select multiple toppings.</p>
 
             <div class="mt-4 flex justify-end space-x-3">
-                <button onclick="closeToppingModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition duration-150">Cancel</button>
-                <button onclick="confirmToppings()" class="px-4 py-2 color-secondary text-white rounded-lg hover:bg-green-700 font-bold transition duration-150">Save Toppings</button>
+                <button onclick="window.closeToppingModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition duration-150">Cancel</button>
+                <button onclick="window.confirmToppings()" class="px-4 py-2 color-secondary text-white rounded-lg hover:bg-green-700 font-bold transition duration-150">Save Toppings</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Payment Method -->
+    <div id="payment-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-20 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-sm transform transition-all duration-300 scale-100">
+            <h3 class="text-2xl font-bold text-primary mb-4">Select Payment Method</h3>
+            <p class="text-lg font-semibold text-gray-700 mb-4">Order Total: <span id="payment-modal-total">$0.00</span></p>
+            
+            <!-- Payment Buttons (Selection + Input Toggle) -->
+            <div class="grid grid-cols-2 gap-4 mb-4" id="payment-method-selector">
+                <button onclick="window.selectPaymentMethod('Currency')" data-method="Currency" class="payment-method-btn py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Currency</button>
+                <button onclick="window.selectPaymentMethod('Debit')" data-method="Debit" class="payment-method-btn py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Debit</button>
+                <button onclick="window.selectPaymentMethod('Credit')" data-method="Credit" class="payment-method-btn py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Credit</button>
+                <button onclick="window.selectPaymentMethod('Transfer')" data-method="Transfer" class="payment-method-btn py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Transfer</button>
+            </div>
+            
+            <!-- Tendered Amount Input (Only required for Currency) -->
+            <div id="tendered-input-section" class="space-y-3 p-3 border rounded-lg bg-gray-50 hidden">
+                <label for="amount-tendered" class="block text-sm font-medium text-gray-700">Amount Tendered (Currency):</label>
+                <input type="number" id="amount-tendered" oninput="window.calculateChange()" step="0.01" min="0" placeholder="0.00" class="w-full p-2 border border-gray-300 rounded-lg text-2xl font-mono focus:ring-secondary focus:border-secondary">
+            </div>
+
+            <!-- Change/Tender Summary -->
+            <div class="mt-4 pt-4 border-t space-y-2">
+                <div class="flex justify-between font-medium text-gray-700">
+                    <span>Tendered:</span>
+                    <span id="tendered-total" class="font-semibold text-gray-800">$0.00</span>
+                </div>
+                <div class="flex justify-between font-extrabold text-xl">
+                    <span>Change Due:</span>
+                    <span id="change-due" class="text-red-500">$0.00</span>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between space-x-3">
+                <button onclick="window.closePaymentModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition duration-150">Cancel</button>
+                <button onclick="window.completeSale()" id="complete-sale-btn" class="px-4 py-2 color-secondary text-white rounded-lg hover:bg-green-700 font-bold transition duration-150 disabled:opacity-50" disabled>Complete Sale</button>
+            </div>
+            
         </div>
     </div>
     <!-- === HTML STRUCTURE SECTION END === -->
@@ -273,6 +324,10 @@
         // NEW: Global State for View Management
         let currentPage = 'POS'; // 'POS' or 'REPORTS'
         let currentReportRange = 'DAILY'; // 'DAILY', 'WEEKLY', or 'MONTHLY'
+        
+        // NEW: Payment State
+        let currentOrderTotal = 0;
+        let selectedPaymentMethod = null;
 
 
         // Set log level for debugging Firestore issues
@@ -596,7 +651,7 @@
             };
 
             if (item.isFlavorRequired) {
-                openFlavorModal(item);
+                window.openFlavorModal(item);
             } else {
                 // Non-flavored items are added directly
                 window.activeCart.push(item);
@@ -638,7 +693,7 @@
 
                 const toppingButton = item.isFlavorRequired ? `
                     <!-- Increased size and rounded corners for touch friendliness -->
-                    <button onclick="openToppingModal(${item.id})" class="text-sm px-3 py-2 rounded-xl bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-100 font-bold shadow-md">
+                    <button onclick="window.openToppingModal(${item.id})" class="text-sm px-3 py-2 rounded-xl bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-100 font-bold shadow-md">
                         Topping
                     </button>
                 ` : '';
@@ -664,16 +719,15 @@
                 actions.className = 'flex justify-end space-x-2 mt-3 pt-3 border-t border-gray-200';
                 actions.innerHTML = `
                     <!-- Increased button size and used explicit text/icons -->
-                    <button onclick="decrementQuantity(${index})" class="w-10 h-10 text-xl rounded-xl bg-red-100 hover:bg-red-200 text-red-600 transition duration-100 font-extrabold shadow-sm flex items-center justify-center">
+                    <button onclick="window.decrementQuantity(${index})" class="w-10 h-10 text-xl rounded-xl bg-red-100 hover:bg-red-200 text-red-600 transition duration-100 font-extrabold shadow-sm flex items-center justify-center">
                         -
                     </button>
-                    <button onclick="incrementQuantity(${index})" class="w-10 h-10 text-xl rounded-xl bg-green-100 hover:bg-green-200 text-green-600 transition duration-100 font-extrabold shadow-sm flex items-center justify-center">
+                    <button onclick="window.incrementQuantity(${index})" class="w-10 h-10 text-xl rounded-xl bg-green-100 hover:bg-green-200 text-green-600 transition duration-100 font-extrabold shadow-sm flex items-center justify-center">
                         +
                     </button>
-                    <button onclick="removeItem(${index})" class="flex items-center space-x-1 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white transition duration-100 font-bold shadow-md">
-                        <!-- Trash icon for immediate recognition -->
+                    <button onclick="window.removeItem(${index})" class="flex items-center space-x-1 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white transition duration-100 font-bold shadow-md">
+                        <!-- UPDATED: Remove 'Remove' text, keep only icon -->
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        <span>Remove</span>
                     </button>
                 `;
                 listItem.appendChild(actions);
@@ -709,13 +763,176 @@
             updateCartInFirestore(window.activeCart);
             showMessageBox('Item removed.', 'bg-red-100 text-red-600');
         };
+        
+        // --- PAYMENT MODAL LOGIC ---
+        
+        window.checkout = () => {
+            if (window.activeCart.length === 0) {
+                showMessageBox('The cart is empty!', 'bg-yellow-100 text-yellow-700');
+                return;
+            }
+            const total = window.activeCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Set global order total and display
+            currentOrderTotal = total;
+            document.getElementById('payment-modal-total').textContent = formatCurrency(currentOrderTotal);
+            
+            // Reset input fields and state
+            const tenderedInput = document.getElementById('amount-tendered');
+            if (tenderedInput) tenderedInput.value = '';
+            
+            selectedPaymentMethod = null;
+            document.getElementById('tendered-input-section').classList.add('hidden');
+            document.getElementById('complete-sale-btn').disabled = true;
+            document.getElementById('tendered-total').textContent = formatCurrency(0);
+            document.getElementById('change-due').textContent = formatCurrency(0);
+            document.getElementById('change-due').classList.add('text-red-500'); // Ensure change is initially red/negative
+            document.getElementById('change-due').classList.remove('text-green-600'); 
+            
+            // Clear payment button selection styles
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('payment-method-selected');
+            });
 
-        // --- FLAVOR MODAL LOGIC ---
+            document.getElementById('payment-modal').classList.remove('hidden');
+        };
 
-        /**
-         * Sets the currently active scoop for flavor selection and updates indicators.
-         * @param {number} index - The 0-based index of the scoop.
-         */
+        window.closePaymentModal = () => {
+            document.getElementById('payment-modal').classList.add('hidden');
+        };
+
+        window.selectPaymentMethod = (method) => {
+            const methodString = typeof method === 'string' ? method : method.dataset.method;
+            selectedPaymentMethod = methodString;
+            
+            // Update button styles
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('payment-method-selected');
+            });
+
+            // Target the clicked button (or find it if methodString was passed directly)
+            const selectedButton = document.querySelector(`[data-method="${methodString}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('payment-method-selected');
+            }
+
+            // Show input field only for Currency
+            const inputSection = document.getElementById('tendered-input-section');
+            if (methodString === 'Currency') {
+                inputSection.classList.remove('hidden');
+            } else {
+                inputSection.classList.add('hidden');
+            }
+            
+            // Recalculate and update button state
+            window.calculateChange();
+        };
+        
+        window.calculateChange = () => {
+            const inputElement = document.getElementById('amount-tendered');
+            const tenderedTotalDisplay = document.getElementById('tendered-total');
+            const changeDueDisplay = document.getElementById('change-due');
+            const completeSaleBtn = document.getElementById('complete-sale-btn');
+            
+            let tenderedAmount = 0;
+            let isPaymentSufficient = false;
+
+            if (selectedPaymentMethod === 'Currency') {
+                tenderedAmount = parseFloat(inputElement.value) || 0;
+                isPaymentSufficient = tenderedAmount >= currentOrderTotal;
+                
+            } else if (selectedPaymentMethod && selectedPaymentMethod !== 'Currency') {
+                // For cashless payments, the full amount is tendered
+                tenderedAmount = currentOrderTotal;
+                isPaymentSufficient = true;
+            }
+
+            const change = tenderedAmount - currentOrderTotal;
+
+            // Update display fields
+            tenderedTotalDisplay.textContent = formatCurrency(tenderedAmount);
+            
+            // Handle change display formatting
+            if (change >= 0) {
+                 changeDueDisplay.textContent = formatCurrency(change);
+                 changeDueDisplay.classList.add('text-green-600');
+                 changeDueDisplay.classList.remove('text-red-500');
+            } else {
+                 changeDueDisplay.textContent = formatCurrency(Math.abs(change));
+                 changeDueDisplay.classList.add('text-red-500');
+                 changeDueDisplay.classList.remove('text-green-600');
+            }
+
+            // Update button state
+            if (isPaymentSufficient) {
+                completeSaleBtn.disabled = false;
+            } else {
+                completeSaleBtn.disabled = true;
+            }
+        };
+
+        window.completeSale = () => {
+            if (document.getElementById('complete-sale-btn').disabled) {
+                showMessageBox("Payment amount is insufficient or method not selected.", 'bg-red-100 text-red-600');
+                return;
+            }
+            
+            const total = document.getElementById('payment-modal-total').textContent;
+            
+            showMessageBox(`Sale complete! Method: ${selectedPaymentMethod}. Total: ${total}. Order cleared.`, 'bg-green-100 text-green-700');
+            
+            // Clear order and close modal
+            window.activeCart = [];
+            updateCartInFirestore(window.activeCart);
+            window.closePaymentModal();
+        };
+
+        // --- FLAVOR MODAL FUNCTIONS ---
+
+        window.openFlavorModal = (item) => {
+            itemPendingFlavor = item;
+            
+            // Initialize pending flavors array with nulls
+            pendingFlavors = Array(item.scoops).fill(null);
+            currentScoopIndex = 0;
+
+            document.getElementById('flavor-modal-item-name').textContent = `${item.name} (${item.scoops} Scoops)`;
+            document.getElementById('flavor-error').classList.add('hidden');
+            
+            const indicatorsContainer = document.getElementById('scoop-indicators');
+            const gridContainer = document.getElementById('single-flavor-grid');
+            
+            indicatorsContainer.innerHTML = '';
+            
+            // 1. Render Scoop Indicators
+            for (let i = 0; i < item.scoops; i++) {
+                const indicatorButton = document.createElement('button');
+                indicatorButton.setAttribute('id', `scoop-indicator-${i}`);
+                indicatorButton.setAttribute('data-scoop-index', i);
+                indicatorButton.setAttribute('onclick', `window.selectScoop(${i})`);
+                indicatorButton.className = 'scoop-indicator-button p-2 w-28 h-16 rounded-lg border-2 text-center transition duration-150 flex flex-col justify-center items-center bg-gray-200 text-gray-600 hover:bg-gray-300 border-gray-300';
+                indicatorButton.innerHTML = `
+                    <div class="text-sm font-semibold">Scoop ${i + 1}</div>
+                    <div class="text-xs italic text-gray-400">Not Set</div>
+                `;
+                indicatorsContainer.appendChild(indicatorButton);
+            }
+            
+            // 2. Render Single Flavor Grid (including the action buttons)
+            const flavorOptions = ITEM_FLAVOR_MAPPING[item.name] || SCOOP_FLAVORS;
+            gridContainer.innerHTML = window.generateFlavorGrid(flavorOptions);
+
+            // 3. Set initial active scoop (the first one)
+            window.selectScoop(0);
+            
+            document.getElementById('flavor-modal').classList.remove('hidden');
+        };
+
+        window.closeFlavorModal = () => {
+            document.getElementById('flavor-modal').classList.add('hidden');
+            itemPendingFlavor = null;
+        };
+
         window.selectScoop = (index) => {
             currentScoopIndex = index;
             
@@ -735,10 +952,6 @@
         };
 
 
-        /**
-         * Applies the selected flavor to the current scoop and advances the scoop index.
-         * @param {string} flavor - The name of the flavor selected.
-         */
         window.selectFlavor = (flavor) => {
             if (!itemPendingFlavor) return;
 
@@ -764,19 +977,19 @@
                 nextIndex = itemPendingFlavor.scoops - 1; 
             }
             
-            selectScoop(nextIndex);
+            window.selectScoop(nextIndex);
 
             // Clear flavor error
             document.getElementById('flavor-error').classList.add('hidden');
         };
 
         // Generates the single flavor grid HTML
-        const generateFlavorGrid = (flavorOptions) => {
+        window.generateFlavorGrid = (flavorOptions) => {
             let html = flavorOptions.map(flavor => `
                 <button 
                     type="button" 
                     data-flavor="${flavor}"
-                    onclick="selectFlavor('${flavor}')"
+                    onclick="window.selectFlavor('${flavor}')"
                     class="px-2 py-4 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:bg-primary/20 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] 
                            flex items-center justify-center text-center aspect-square"
                 >
@@ -786,7 +999,7 @@
 
             // Add the Cancel button (Red Cross)
             html += `
-                <button onclick="closeFlavorModal()" class="aspect-square flex flex-col items-center justify-center text-center rounded-lg border-2 border-red-500 bg-red-100 text-red-700 hover:bg-red-200 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] shadow-md">
+                <button onclick="window.closeFlavorModal()" class="aspect-square flex flex-col items-center justify-center text-center rounded-lg border-2 border-red-500 bg-red-100 text-red-700 hover:bg-red-200 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] shadow-md">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                     <span class="text-sm font-bold mt-1">CANCEL</span>
                 </button>
@@ -794,7 +1007,7 @@
 
             // Add the Add Order button (Green Mark)
             html += `
-                <button onclick="confirmFlavors()" class="aspect-square flex flex-col items-center justify-center text-center rounded-lg border-2 border-green-500 bg-green-100 text-green-700 hover:bg-green-200 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] shadow-md">
+                <button onclick="window.confirmFlavors()" class="aspect-square flex flex-col items-center justify-center text-center rounded-lg border-2 border-green-500 bg-green-100 text-green-700 hover:bg-green-200 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] shadow-md">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     <span class="text-sm font-bold mt-1">ADD ORDER</span>
                 </button>
@@ -802,52 +1015,7 @@
 
             return html;
         };
-
-
-        window.openFlavorModal = (item) => {
-            itemPendingFlavor = item;
-            
-            // Initialize pending flavors array with nulls
-            pendingFlavors = Array(item.scoops).fill(null);
-            currentScoopIndex = 0;
-
-            document.getElementById('flavor-modal-item-name').textContent = `${item.name} (${item.scoops} Scoops)`;
-            document.getElementById('flavor-error').classList.add('hidden');
-            
-            const indicatorsContainer = document.getElementById('scoop-indicators');
-            const gridContainer = document.getElementById('single-flavor-grid');
-            
-            indicatorsContainer.innerHTML = '';
-            
-            // 1. Render Scoop Indicators
-            for (let i = 0; i < item.scoops; i++) {
-                const indicatorButton = document.createElement('button');
-                indicatorButton.setAttribute('id', `scoop-indicator-${i}`);
-                indicatorButton.setAttribute('data-scoop-index', i);
-                indicatorButton.setAttribute('onclick', `selectScoop(${i})`);
-                indicatorButton.className = 'scoop-indicator-button p-2 w-28 h-16 rounded-lg border-2 text-center transition duration-150 flex flex-col justify-center items-center bg-gray-200 text-gray-600 hover:bg-gray-300 border-gray-300';
-                indicatorButton.innerHTML = `
-                    <div class="text-sm font-semibold">Scoop ${i + 1}</div>
-                    <div class="text-xs italic text-gray-400">Not Set</div>
-                `;
-                indicatorsContainer.appendChild(indicatorButton);
-            }
-            
-            // 2. Render Single Flavor Grid (including the action buttons)
-            const flavorOptions = ITEM_FLAVOR_MAPPING[item.name] || SCOOP_FLAVORS;
-            gridContainer.innerHTML = generateFlavorGrid(flavorOptions);
-
-            // 3. Set initial active scoop (the first one)
-            selectScoop(0);
-            
-            document.getElementById('flavor-modal').classList.remove('hidden');
-        };
-
-        window.closeFlavorModal = () => {
-            document.getElementById('flavor-modal').classList.add('hidden');
-            itemPendingFlavor = null;
-        };
-
+        
         window.confirmFlavors = () => {
             if (!itemPendingFlavor) return;
 
@@ -860,7 +1028,7 @@
                 // Highlight the first unflavored scoop
                 const firstUnflavoredIndex = pendingFlavors.findIndex(f => f === null);
                 if (firstUnflavoredIndex !== -1) {
-                     selectScoop(firstUnflavoredIndex);
+                     window.selectScoop(firstUnflavoredIndex);
                 }
                 return;
             }
@@ -869,10 +1037,9 @@
             itemPendingFlavor.flavors = pendingFlavors;
             window.activeCart.push(itemPendingFlavor);
             updateCartInFirestore(window.activeCart);
-            closeFlavorModal();
+            window.closeFlavorModal();
             showMessageBox(`Added ${itemPendingFlavor.name} with ${itemPendingFlavor.scoops} flavors!`, 'bg-blue-100 text-blue-700');
         };
-
 
         // --- TOPPING MODAL LOGIC ---
 
@@ -883,7 +1050,7 @@
                     <button 
                         type="button" 
                         data-topping="${topping}"
-                        onclick="toggleTopping(event, '${topping}')"
+                        onclick="window.toggleTopping(event, '${topping}')"
                         class="p-3 text-sm font-medium rounded-lg border border-gray-300 transition duration-150 transform hover:scale-[1.03] active:scale-[0.98] 
                                ${isSelected ? 'bg-indigo-200 text-indigo-800 border-indigo-400 shadow-md' : 'bg-white hover:bg-gray-100'}
                                flex items-center justify-center text-center aspect-square"
@@ -941,7 +1108,7 @@
             const itemIndex = window.activeCart.findIndex(item => item.id === itemPendingToppingsId);
             if (itemIndex === -1) {
                 showMessageBox("Error confirming toppings: Item not found.", 'bg-red-100 text-red-600');
-                closeToppingModal();
+                window.closeToppingModal();
                 return;
             }
             
@@ -957,7 +1124,7 @@
             
             updateCartInFirestore(window.activeCart);
             
-            closeToppingModal();
+            window.closeToppingModal();
             showMessageBox('Toppings updated successfully!', 'bg-indigo-100 text-indigo-700');
         };
 
@@ -971,19 +1138,128 @@
                 showMessageBox('Order cleared.', 'bg-orange-100 text-orange-700');
             }
         };
-
+        
         window.checkout = () => {
-            if (window.activeCart.length > 0) {
-                const total = window.activeCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                showMessageBox(`Checkout complete! Total: ${formatCurrency(total)}. Order is cleared.`, 'bg-green-100 text-green-700');
-                // In a real POS, this would save the order to a 'history' collection before clearing.
-                window.activeCart = [];
-                updateCartInFirestore(window.activeCart);
-            } else {
+            if (window.activeCart.length === 0) {
                 showMessageBox('The cart is empty!', 'bg-yellow-100 text-yellow-700');
+                return;
             }
+            const total = window.activeCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Set global order total and display
+            currentOrderTotal = total;
+            document.getElementById('payment-modal-total').textContent = formatCurrency(currentOrderTotal);
+            
+            // Reset input fields and state
+            const tenderedInput = document.getElementById('amount-tendered');
+            if (tenderedInput) tenderedInput.value = '';
+            
+            selectedPaymentMethod = null;
+            document.getElementById('tendered-input-section').classList.add('hidden');
+            document.getElementById('complete-sale-btn').disabled = true;
+            document.getElementById('tendered-total').textContent = formatCurrency(0);
+            document.getElementById('change-due').textContent = formatCurrency(0);
+            document.getElementById('change-due').classList.add('text-red-500'); // Ensure change is initially red/negative
+            document.getElementById('change-due').classList.remove('text-green-600'); 
+            
+            // Clear payment button selection styles
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('payment-method-selected');
+            });
+
+            document.getElementById('payment-modal').classList.remove('hidden');
+        };
+
+        window.closePaymentModal = () => {
+            document.getElementById('payment-modal').classList.add('hidden');
+        };
+
+        window.selectPaymentMethod = (method) => {
+            const methodString = typeof method === 'string' ? method : method.dataset.method;
+            selectedPaymentMethod = methodString;
+            
+            // Update button styles
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('payment-method-selected');
+            });
+
+            // Target the clicked button (or find it if methodString was passed directly)
+            const selectedButton = document.querySelector(`[data-method="${methodString}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('payment-method-selected');
+            }
+
+            // Show input field only for Currency
+            const inputSection = document.getElementById('tendered-input-section');
+            if (methodString === 'Currency') {
+                inputSection.classList.remove('hidden');
+            } else {
+                inputSection.classList.add('hidden');
+            }
+            
+            // Recalculate and update button state
+            window.calculateChange();
         };
         
+        window.calculateChange = () => {
+            const inputElement = document.getElementById('amount-tendered');
+            const tenderedTotalDisplay = document.getElementById('tendered-total');
+            const changeDueDisplay = document.getElementById('change-due');
+            const completeSaleBtn = document.getElementById('complete-sale-btn');
+            
+            let tenderedAmount = 0;
+            let isPaymentSufficient = false;
+
+            if (selectedPaymentMethod === 'Currency') {
+                tenderedAmount = parseFloat(inputElement.value) || 0;
+                isPaymentSufficient = tenderedAmount >= currentOrderTotal;
+                
+            } else if (selectedPaymentMethod && selectedPaymentMethod !== 'Currency') {
+                // For cashless payments, the full amount is tendered
+                tenderedAmount = currentOrderTotal;
+                isPaymentSufficient = true;
+            }
+
+            const change = tenderedAmount - currentOrderTotal;
+
+            // Update display fields
+            tenderedTotalDisplay.textContent = formatCurrency(tenderedAmount);
+            
+            // Handle change display formatting
+            if (change >= 0) {
+                 changeDueDisplay.textContent = formatCurrency(change);
+                 changeDueDisplay.classList.add('text-green-600');
+                 changeDueDisplay.classList.remove('text-red-500');
+            } else {
+                 changeDueDisplay.textContent = formatCurrency(Math.abs(change));
+                 changeDueDisplay.classList.add('text-red-500');
+                 changeDueDisplay.classList.remove('text-green-600');
+            }
+
+            // Update button state
+            if (isPaymentSufficient) {
+                completeSaleBtn.disabled = false;
+            } else {
+                completeSaleBtn.disabled = true;
+            }
+        };
+
+        window.completeSale = () => {
+            if (document.getElementById('complete-sale-btn').disabled) {
+                showMessageBox("Payment amount is insufficient or method not selected.", 'bg-red-100 text-red-600');
+                return;
+            }
+            
+            const total = document.getElementById('payment-modal-total').textContent;
+            
+            showMessageBox(`Sale complete! Method: ${selectedPaymentMethod}. Total: ${total}. Order cleared.`, 'bg-green-100 text-green-700');
+            
+            // Clear order and close modal
+            window.activeCart = [];
+            updateCartInFirestore(window.activeCart);
+            window.closePaymentModal();
+        };
+
         // Custom message box instead of alert()
         window.showMessageBox = (message, className) => {
             const box = document.getElementById('message-box');
@@ -1213,6 +1489,21 @@
                     }
                 }
             });
+        }
+
+        const updateRevenueText = (range) => {
+            const revenueTextElement = document.getElementById('revenue-period-text');
+            if (!revenueTextElement) return;
+
+            let text;
+            if (range === 'WEEKLY') {
+                text = 'Revenue (This Week)';
+            } else if (range === 'MONTHLY') {
+                text = 'Revenue (Last 30 Days)';
+            } else {
+                text = 'Revenue (Today)';
+            }
+            if (revenueTextElement) revenueTextElement.textContent = text;
         }
 
         window.changeReportRange = (range) => {
