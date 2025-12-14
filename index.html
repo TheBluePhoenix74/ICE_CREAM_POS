@@ -6,6 +6,8 @@
     <title>Ice Cream POS</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load D3.js for Data Visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script> 
 
     <!-- === CSS STYLES SECTION START === -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -26,15 +28,37 @@
         .custom-scroll::-webkit-scrollbar-track {
             background: #e0e0e0;
         }
-        /* Ice Cream Theme Colors */
-        .color-primary { background-color: #ffb8c2; } /* Soft Pink (Strawberry) */
+        /* Ice Cream Theme Colors - UPDATED TO MINT GREEN */
+        .color-primary { background-color: #98fb98; } /* Mint Green Background */
         .color-secondary { background-color: #65a30d; } /* Lime Green (Mint/Pistachio) */
-        .text-primary { color: #8e44ad; } /* Deep Purple */
-        .border-primary { border-color: #ffb8c2; }
+        .text-primary { color: #98fb98; } /* MINT GREEN TEXT COLOR */
+        .border-primary { border-color: #98fb98; }
         
         /* Ensure HTML and Body use full height of viewport */
         html, body {
             height: 100%;
+        }
+
+        /* D3 Chart specific styles */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .bar {
+            fill: #65a30d;
+        }
+        .label-text {
+            font-size: 10px;
+        }
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #8e44ad;
+            text-align: center;
+            padding-top: 10px;
         }
     </style>
     <!-- === CSS STYLES SECTION END === -->
@@ -45,73 +69,134 @@
 
     <!-- Header -->
     <header class="shadow-md p-4 bg-white sticky top-0 z-10">
-        <div class="flex items-center justify-between max-w-7xl mx-auto">
-            <h1 class="text-3xl font-extrabold text-primary">Sweet Scoops POS</h1>
+        <!-- Adjusted header structure for better centering -->
+        <div class="flex items-center justify-between max-w-7xl mx-auto relative">
+            <!-- 1. Left Control (View Toggle Button) -->
+            <button id="view-toggle-button" onclick="changeView()" class="px-3 py-2 bg-gray-100 rounded-lg text-sm font-semibold hover:bg-gray-200 transition duration-150 flex-shrink-0 z-20">
+                Reports
+            </button>
             
-            <!-- Real-time Clock and Date Display -->
-            <div id="date-time-display" class="text-sm font-medium text-gray-700 text-center flex-grow mx-4">
-                <!-- Clock will be updated by JS -->
-                <span class="text-lg font-bold text-gray-800">00:00:00 AM</span>
-                <span class="text-xs text-gray-500">Loading Date...</span>
-            </div>
+            <!-- 2. Shop Name (Absolutely Centered) -->
+            <h1 class="text-3xl font-extrabold text-primary absolute left-1/2 transform -translate-x-1/2 z-10">Helarte</h1>
+            
+            <!-- 3. Right Controls (Clock and Auth Status, pushed to the right) -->
+            <div class="flex items-center space-x-4 flex-shrink-0 ml-auto z-20">
+                <div id="date-time-display" class="text-sm font-medium text-gray-700 text-center">
+                    <span class="text-lg font-bold text-gray-800">00:00:00 AM</span>
+                    <span class="text-xs text-gray-500">Loading Date...</span>
+                </div>
 
-            <div id="auth-status" class="text-sm font-medium text-gray-600 flex-shrink-0">
-                <span id="user-id-display" class="hidden">User: <span class="font-mono text-xs p-1 rounded bg-gray-100"></span></span>
-                <span id="loading-auth" class="text-yellow-600">Loading...</span>
+                <div id="auth-status" class="text-sm font-medium text-gray-600">
+                    <span id="user-id-display" class="hidden">User: <span class="font-mono text-xs p-1 rounded bg-gray-100"></span></span>
+                    <span id="loading-auth" class="text-yellow-600">Loading...</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main POS Layout - Updated to flex container for 75/25 distribution on large screens -->
-    <main class="flex-grow max-w-7xl mx-auto w-full p-4 flex flex-col lg:flex-row gap-6">
+    <!-- Main Content Container -->
+    <main id="app-content" class="flex-grow max-w-7xl mx-auto w-full p-4">
 
-        <!-- Column 1: Categories and Menu Items - 75% width on large screens -->
-        <section class="w-full lg:w-3/4 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
-            <!-- Category Tabs -->
-            <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0">
-                <!-- Buttons will be rendered here -->
-            </div>
+        <!-- POS View Container - FORCED 75/25 distribution on ALL screens -->
+        <div id="pos-view" class="flex flex-col sm:flex-row gap-6 h-full">
 
-            <!-- Menu Items Display -->
-            <div id="menu-items" class="grid grid-cols-2 sm:grid-cols-3 gap-4 flex-grow custom-scroll overflow-y-auto p-2 bg-white rounded-xl shadow-lg">
-                <!-- Menu items will be rendered here -->
-            </div>
-        </section>
-
-        <!-- Column 2: Order Summary (Cart) - 25% width on large screens -->
-        <section class="w-full lg:w-1/4 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
-            <!-- Title with Order Number -->
-            <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
-                <span>Current Order</span>
-                <!-- UPDATED: Display dynamic order number -->
-                <span id="order-number-display" class="text-lg font-extrabold text-gray-500 bg-gray-100 p-1 rounded">Order #001</span>
-            </h2>
-
-            <!-- Cart Items List -->
-            <div id="cart-items-list" class="flex-grow custom-scroll overflow-y-auto space-y-3 pr-2 mb-4">
-                <!-- Cart items will be rendered here -->
-            </div>
-
-            <!-- Total Summary -->
-            <div id="cart-summary" class="border-t pt-4 space-y-2 flex-shrink-0">
-                <div class="flex justify-between items-center text-lg">
-                    <span class="font-medium text-gray-700">Subtotal:</span>
-                    <span id="subtotal-amount" class="font-semibold text-gray-700">$0.00</span>
+            <!-- Column 1: Categories and Menu Items - 75% width on ALL screens -->
+            <section class="w-3/4 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
+                <!-- Category Tabs -->
+                <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0">
+                    <!-- Buttons will be rendered here -->
                 </div>
-                <div class="flex justify-between items-center text-2xl font-extrabold color-primary rounded-lg p-2 shadow-inner">
-                    <span class="text-gray-800">TOTAL:</span>
-                    <span id="total-amount" class="text-gray-800">$0.00</span>
+
+                <!-- Menu Items Display -->
+                <div id="menu-items" class="grid grid-cols-2 sm:grid-cols-3 gap-4 flex-grow custom-scroll overflow-y-auto p-2 bg-white rounded-xl shadow-lg">
+                    <!-- Menu items will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Column 2: Order Summary (Cart) - 25% width on ALL screens -->
+            <section class="w-1/4 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
+                <!-- Title with Order Number - UPDATED TO "Order" -->
+                <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
+                    <span>Order</span>
+                    <!-- UPDATED: Display dynamic order number only -->
+                    <span id="order-number-display" class="text-lg font-extrabold text-gray-500 bg-gray-100 p-1 rounded">001</span>
+                </h2>
+
+                <!-- Cart Items List -->
+                <div id="cart-items-list" class="flex-grow custom-scroll overflow-y-auto space-y-3 pr-2 mb-4">
+                    <!-- Cart items will be rendered here -->
+                </div>
+
+                <!-- Total Summary -->
+                <div id="cart-summary" class="border-t pt-4 space-y-2 flex-shrink-0">
+                    <div class="flex justify-between items-center text-lg">
+                        <span class="font-medium text-gray-700">Subtotal:</span>
+                        <span id="subtotal-amount" class="font-semibold text-gray-700">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-2xl font-extrabold color-primary rounded-lg p-2 shadow-inner">
+                        <span class="text-gray-800">TOTAL:</span>
+                        <span id="total-amount" class="text-gray-800">$0.00</span>
+                    </div>
+                    
+                    <button onclick="clearOrder()" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
+                        Clear Order
+                    </button>
+                    <button onclick="checkout()" class="w-full py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
+                        Checkout
+                    </button>
+                    <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Reports View Container (Placeholder + Charts) -->
+        <div id="reports-view" class="hidden w-full h-full p-4 bg-white rounded-xl shadow-lg space-y-6">
+            <h2 class="text-3xl font-extrabold text-primary mb-4 border-b pb-2">Daily Sales Report</h2>
+            
+            <!-- NEW: Report Range Selector -->
+            <div id="report-range-selector" class="flex space-x-3 mb-4">
+                <button onclick="changeReportRange('DAILY')" id="report-daily-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-200 text-gray-800">Daily (Hourly)</button>
+                <button onclick="changeReportRange('WEEKLY')" id="report-weekly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Weekly (7 Days)</button>
+                <button onclick="changeReportRange('MONTHLY')" id="report-monthly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Monthly (30 Days)</button>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                    <!-- ADDED ID FOR DYNAMIC TEXT UPDATE -->
+                    <p class="text-sm text-gray-500" id="revenue-period-text">Revenue (Today)</p>
+                    <p class="text-2xl font-bold text-green-600" id="revenue-value">$542.50</p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                    <p class="text-sm text-gray-500">Orders Processed</p>
+                    <p class="text-2xl font-bold text-indigo-600" id="orders-processed-value">47</p>
+                </div>
+                <!-- Top Flavor Report Section -->
+                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                    <p class="text-sm text-gray-500">Top Flavor</p>
+                    <p class="text-2xl font-bold text-primary">Strawberry</p>
+                </div>
+                <!-- REMAINING TOP SELLER SECTION -->
+                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                    <p class="text-sm text-gray-500">Top Seller (Item)</p>
+                    <p class="text-2xl font-bold text-primary">Triple Cone</p>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Bar Graph Container -->
+                <div id="bar-chart-container" class="chart-container">
+                    <div class="chart-title">Hourly Sales Distribution</div>
                 </div>
                 
-                <button onclick="clearOrder()" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
-                    Clear Order
-                </button>
-                <button onclick="checkout()" class="w-full py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
-                    Checkout
-                </button>
-                <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
+                <!-- Pie Chart Container -->
+                <div id="pie-chart-container" class="chart-container">
+                    <div class="chart-title">Sales Percentage by Flavor</div>
+                </div>
             </div>
-        </section>
+        </div>
+
     </main>
 
     <!-- Modal for Flavor Selection (Hidden by default) -->
@@ -184,6 +269,10 @@
         
         let itemPendingToppingsId = null; // Stores the ID of the item currently receiving toppings
         let pendingToppings = [];         // Array to store selected toppings for the current item
+        
+        // NEW: Global State for View Management
+        let currentPage = 'POS'; // 'POS' or 'REPORTS'
+        let currentReportRange = 'DAILY'; // 'DAILY', 'WEEKLY', or 'MONTHLY'
 
 
         // Set log level for debugging Firestore issues
@@ -243,6 +332,42 @@
             "Cream Pop": ["Mango", "Strawberry", "Cookie", "Vanilla", "Chocolate", "Oreo", "Nut", "Fruit"],
             "Milkshake": SCOOP_FLAVORS 
         };
+
+        // D3 Placeholder Data
+        const HOURLY_SALES_DATA = [
+            { hour: '9 AM', sales: 40 }, { hour: '10 AM', sales: 65 }, { hour: '11 AM', sales: 90 }, 
+            { hour: '12 PM', sales: 150 }, { hour: '1 PM', sales: 120 }, { hour: '2 PM', sales: 80 }, 
+            { hour: '3 PM', sales: 110 }, { hour: '4 PM', sales: 130 }, { hour: '5 PM', sales: 160 }, 
+            { hour: '6 PM', sales: 140 },
+        ];
+        
+        const WEEKLY_SALES_DATA = [
+            { day: 'Mon', sales: 600 }, { day: 'Tue', sales: 750 }, { day: 'Wed', sales: 520 }, 
+            { day: 'Thu', sales: 900 }, { day: 'Fri', sales: 1100 }, { day: 'Sat', sales: 1400 }, 
+            { day: 'Sun', sales: 1550 },
+        ];
+
+        // Generate 30 days of monthly sales data
+        const MONTHLY_SALES_DATA = [];
+        for (let i = 1; i <= 30; i++) {
+            // Sales value between 100 and 400 for a single day placeholder
+            const sales = Math.floor(Math.random() * 300) + 100;
+            MONTHLY_SALES_DATA.push({ period: `${i}`, sales: sales });
+        }
+        
+        const FLAVOR_SALES_DATA = [
+            { flavor: 'Vanilla', value: 300 }, { flavor: 'Strawberry', value: 250 }, 
+            { flavor: 'Chocolate', value: 180 }, { flavor: 'Oreo', value: 120 },
+            { flavor: 'Mango', value: 80 }, { flavor: 'Lime', value: 70 },
+        ];
+        
+        // NEW: Placeholder data for key metrics
+        const REPORT_METRICS = {
+            'DAILY': { revenue: 542.50, orders: 47 },
+            'WEEKLY': { revenue: 4850.75, orders: 320 },
+            'MONTHLY': { revenue: 19800.00, orders: 1250 }
+        };
+
 
         // Global State
         window.activeCart = []; // Current cart state
@@ -514,7 +639,7 @@
                 const toppingButton = item.isFlavorRequired ? `
                     <!-- Increased size and rounded corners for touch friendliness -->
                     <button onclick="openToppingModal(${item.id})" class="text-sm px-3 py-2 rounded-xl bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-100 font-bold shadow-md">
-                        + Topping
+                        Topping
                     </button>
                 ` : '';
 
@@ -879,11 +1004,8 @@
             const now = new Date();
             
             // --- Standard Clock Display ---
-            // Format date: Sat, Nov 22, 2025
             const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             const dateString = now.toLocaleDateString('en-US', dateOptions);
-
-            // Format time: 7:26:45 PM
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
             const timeString = now.toLocaleTimeString('en-US', timeOptions);
 
@@ -906,10 +1028,243 @@
 
             const orderDisplayElement = document.getElementById('order-number-display');
             if (orderDisplayElement) {
-                orderDisplayElement.textContent = `Order #${orderNumber}`;
+                // REMOVED "Order #" prefix
+                orderDisplayElement.textContent = `${orderNumber}`;
             }
         };
 
+        // NEW: Function to update metric values based on selected range
+        const updateKeyMetrics = (range) => {
+            const metrics = REPORT_METRICS[range];
+            const revenueTextElement = document.getElementById('revenue-period-text');
+            const revenueValueElement = document.getElementById('revenue-value');
+            const ordersValueElement = document.getElementById('orders-processed-value');
+
+            // Update Revenue Period Text
+            let text;
+            if (range === 'WEEKLY') {
+                text = 'Revenue (This Week)';
+            } else if (range === 'MONTHLY') {
+                text = 'Revenue (Last 30 Days)';
+            } else {
+                text = 'Revenue (Today)';
+            }
+            if (revenueTextElement) revenueTextElement.textContent = text;
+
+            // Update Value Displays
+            if (revenueValueElement) {
+                revenueValueElement.textContent = formatCurrency(metrics.revenue);
+            }
+            if (ordersValueElement) {
+                ordersValueElement.textContent = metrics.orders;
+            }
+        }
+
+
+        // --- D3 CHART RENDERING LOGIC (NEW) ---
+
+        const renderHourlySalesBarChart = (data, range) => {
+            const containerId = "#bar-chart-container";
+            d3.select(containerId).select("svg").remove();
+
+            const container = d3.select(containerId);
+            const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+            const containerWidth = container.node().clientWidth;
+            const containerHeight = 400; // Fixed height defined in CSS
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+            
+            const svg = container.append("svg")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .append("g")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+            // Determine key name for X-axis based on report range
+            const xKey = range === 'DAILY' ? 'hour' : (range === 'WEEKLY' ? 'day' : 'period');
+            const xDomain = data.map(d => d[xKey]);
+
+
+            const x = d3.scaleBand()
+                .domain(xDomain)
+                .range([0, width])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.sales)])
+                .nice()
+                .range([height, 0]);
+
+            // Draw Bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d[xKey]))
+                .attr("y", d => y(d.sales))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.sales))
+                .attr("rx", 4)
+                .attr("ry", 4);
+
+            // X-axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("class", "label-text")
+                // Rotate X-axis labels for WEEKLY and MONTHLY to fit
+                .style("text-anchor", range !== 'DAILY' ? "end" : "middle")
+                .attr("dx", range !== 'DAILY' ? "-.8em" : "0")
+                .attr("dy", range !== 'DAILY' ? ".15em" : ".71em")
+                .attr("transform", range !== 'DAILY' ? "rotate(-45)" : null);
+
+            // Y-axis
+            svg.append("g")
+                .call(d3.axisLeft(y))
+                .selectAll("text")
+                .attr("class", "label-text");
+
+            // Y-axis Label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 5)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .attr("class", "text-gray-600 label-text")
+                .text("Sales ($)");
+        };
+
+        const renderFlavorPieChart = () => {
+            const containerId = "#pie-chart-container";
+            d3.select(containerId).select("svg").remove();
+
+            const container = d3.select(containerId);
+            const containerWidth = container.node().clientWidth;
+            const containerHeight = 400; // Fixed height defined in CSS
+            const margin = 20;
+
+            const radius = Math.min(containerWidth, containerHeight) / 2 - margin;
+            
+            const svg = container.append("svg")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .append("g")
+                .attr("transform", `translate(${containerWidth / 2}, ${containerHeight / 2})`);
+
+            // Color scale
+            const color = d3.scaleOrdinal()
+                .domain(FLAVOR_SALES_DATA.map(d => d.flavor))
+                .range(d3.schemeCategory10);
+
+            // Compute pie slices
+            const pie = d3.pie()
+                .value(d => d.value)
+                .sort(null);
+
+            const arc = d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius);
+
+            const data_ready = pie(FLAVOR_SALES_DATA);
+
+            // Draw slices
+            svg.selectAll('slices')
+                .data(data_ready)
+                .enter()
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', d => color(d.data.flavor))
+                .attr("stroke", "white")
+                .style("stroke-width", "2px")
+                .style("opacity", 0.8);
+
+            // Add labels
+            svg.selectAll('slices')
+                .data(data_ready)
+                .enter()
+                .append('text')
+                .text(d => {
+                    const total = d3.sum(FLAVOR_SALES_DATA, data => data.value);
+                    const percentage = ((d.data.value / total) * 100).toFixed(1);
+                    return `${d.data.flavor} (${percentage}%)`;
+                })
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .style("text-anchor", "middle")
+                .style("font-size", 12)
+                .style("fill", "black");
+        };
+
+
+        // --- VIEW MANAGEMENT LOGIC (NEW) ---
+
+        const updateReportButtonStyles = (range) => {
+            const ranges = ['daily', 'weekly', 'monthly'];
+            ranges.forEach(r => {
+                const btn = document.getElementById(`report-${r}-btn`);
+                if (btn) {
+                    if (r.toUpperCase() === range) {
+                        btn.classList.add('bg-gray-200', 'text-gray-800');
+                        btn.classList.remove('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                    } else {
+                        btn.classList.remove('bg-gray-200', 'text-gray-800');
+                        btn.classList.add('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                    }
+                }
+            });
+        }
+
+        window.changeReportRange = (range) => {
+            currentReportRange = range;
+            updateReportButtonStyles(range);
+            updateKeyMetrics(range);
+            
+            // Re-render only the reports since we are already in the reports view
+            renderHourlySalesBarChart(getCurrentBarChartData(), currentReportRange);
+        }
+
+        const getCurrentBarChartData = () => {
+            if (currentReportRange === 'WEEKLY') {
+                return WEEKLY_SALES_DATA;
+            } else if (currentReportRange === 'MONTHLY') {
+                return MONTHLY_SALES_DATA;
+            } else { // DAILY
+                return HOURLY_SALES_DATA;
+            }
+        }
+
+
+        window.renderApp = () => {
+            const posView = document.getElementById('pos-view');
+            const reportsView = document.getElementById('reports-view');
+            const viewButton = document.getElementById('view-toggle-button');
+            
+            if (!posView || !reportsView || !viewButton) return;
+
+            if (currentPage === 'POS') {
+                posView.classList.remove('hidden');
+                reportsView.classList.add('hidden');
+                viewButton.textContent = 'Reports';
+                renderCategories(); 
+                renderMenuItems(window.currentCategory);
+            } else {
+                posView.classList.add('hidden');
+                reportsView.classList.remove('hidden');
+                viewButton.textContent = 'Sale'; 
+                
+                // Initialize button styles and render charts based on currentReportRange
+                updateReportButtonStyles(currentReportRange);
+                updateKeyMetrics(currentReportRange); // Initial metric update on view switch
+                renderHourlySalesBarChart(getCurrentBarChartData(), currentReportRange);
+                renderFlavorPieChart();
+            }
+        }
+
+        window.changeView = () => {
+            currentPage = (currentPage === 'POS') ? 'REPORTS' : 'POS';
+            window.renderApp();
+        }
 
         // --- APPLICATION INITIALIZATION ---
         
@@ -923,6 +1278,9 @@
         
         // 3. Initialize Firebase and handle cart persistence asynchronously
         initFirebaseAndAuth();
+
+        // 4. Set the initial view
+        renderApp();
     </script>
     <!-- === JAVASCRIPT LOGIC SECTION END === -->
 </body>
