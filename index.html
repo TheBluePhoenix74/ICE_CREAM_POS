@@ -28,18 +28,16 @@
         .custom-scroll::-webkit-scrollbar-track {
             background: #e0e0e0;
         }
-        /* Ice Cream Theme Colors - UPDATED TO MINT GREEN */
-        .color-primary { background-color: #98fb98; } /* Mint Green Background */
-        .color-secondary { background-color: #65a30d; } /* Lime Green (Mint/Pistachio) */
-        .text-primary { color: #98fb98; } /* MINT GREEN TEXT COLOR */
+        /* Ice Cream Theme Colors - MINT GREEN */
+        .color-primary { background-color: #98fb98; }
+        .color-secondary { background-color: #65a30d; }
+        .text-primary { color: #98fb98; }
         .border-primary { border-color: #98fb98; }
         
-        /* Ensure HTML and Body use full height of viewport */
         html, body {
             height: 100%;
         }
 
-        /* D3 Chart specific styles */
         .chart-container {
             width: 100%;
             height: 400px;
@@ -60,20 +58,12 @@
             text-align: center;
             padding-top: 10px;
         }
-        /* Style for selected payment method button */
-        .payment-method-selected {
-            border: 3px solid #65a30d; /* Lime Green border on selection */
-            box-shadow: 0 0 0 4px rgba(101, 163, 13, 0.4);
-            transform: scale(1.02);
-        }
 
         /* === PRINTING STYLES === */
         @media print {
-            /* Hide everything by default */
             body * {
                 visibility: hidden;
             }
-            /* Show only the receipt area */
             #printable-receipt-area, #printable-receipt-area * {
                 visibility: visible;
             }
@@ -81,12 +71,9 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 80mm; /* Standard receipt width */
+                width: 80mm;
                 padding: 0;
                 margin: 0;
-            }
-            /* Remove shadows/borders for print */
-            #printable-receipt-area {
                 box-shadow: none !important;
                 border: none !important;
             }
@@ -95,326 +82,288 @@
         .receipt-font {
             font-family: 'Courier Prime', monospace;
         }
+
+        .menu-icon-container {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+            border-width: 2px;
+            background-color: white;
+        }
     </style>
     <!-- === CSS STYLES SECTION END === -->
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-    <!-- === HTML STRUCTURE SECTION START === -->
-
-    <!-- Header -->
-    <header class="shadow-md p-4 bg-white sticky top-0 z-10">
-        <!-- Adjusted header structure for better centering -->
-        <div class="flex items-center justify-between max-w-7xl mx-auto relative">
-            <!-- 1. Left Control (View Toggle Button) -->
-            <button id="view-toggle-button" onclick="changeView()" class="px-3 py-2 bg-gray-100 rounded-lg text-sm font-semibold hover:bg-gray-200 transition duration-150 flex-shrink-0 z-20">
-                Reports
-            </button>
-            
-            <!-- 2. Shop Name (Absolutely Centered) -->
-            <h1 class="text-3xl font-extrabold text-primary absolute left-1/2 transform -translate-x-1/2 z-10">Helarte</h1>
-            
-            <!-- 3. Right Controls (Clock and Auth Status, pushed to the right) -->
-            <div class="flex items-center space-x-4 flex-shrink-0 ml-auto z-20">
-                <div id="date-time-display" class="text-sm font-medium text-gray-700 text-center">
-                    <span class="text-lg font-bold text-gray-800">00:00:00 AM</span>
-                    <span class="text-xs text-gray-500">Loading Date...</span>
+    <!-- === LOGIN VIEW START === -->
+    <div id="login-view" class="flex-grow flex items-center justify-center p-4 bg-gray-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100">
+            <div class="text-center mb-8">
+                <!-- Logo only, text removed -->
+                <div class="flex flex-col items-center justify-center mb-4">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPS5zwGLxGd_KfvsmJNtiSzMJ7FRXkldtRYdgULdH2XAhA1rDQ1xOAfn1hGRhxP3iRORxQEjo3xQrBaP2-deFculm9AIGTDMUtlid-lJDdPPpJlpak=w2400" alt="Helarte Logo" class="h-32 w-auto mb-2 object-contain">
                 </div>
-
-                <div id="auth-status" class="text-sm font-medium text-gray-600">
-                    <span id="user-id-display" class="hidden">User: <span class="font-mono text-xs p-1 rounded bg-gray-100"></span></span>
-                    <span id="loading-auth" class="text-yellow-600">Loading...</span>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label for="login-username" class="block text-sm font-bold text-gray-700 mb-2">Username</label>
+                    <input type="text" id="login-username" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-lime-500 focus:border-lime-500 outline-none transition" placeholder="Enter username">
                 </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-bold text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-lime-500 focus:border-lime-500 outline-none transition" placeholder="••••••••">
+                </div>
+                <div id="login-error" class="hidden text-red-600 text-sm font-bold bg-red-50 p-3 rounded-lg border border-red-100">
+                    Invalid username or password.
+                </div>
+                <button onclick="window.handleLogin()" class="w-full py-4 color-secondary text-white font-black text-lg rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95">
+                    LOGIN
+                </button>
+            </div>
+            
+            <div class="mt-8 text-center text-xs text-gray-400">
+                &copy; 2025 Helarte POS System
             </div>
         </div>
-    </header>
+    </div>
+    <!-- === LOGIN VIEW END === -->
 
-    <!-- Main Content Container -->
-    <main id="app-content" class="flex-grow max-w-7xl mx-auto w-full p-4">
-
-        <!-- POS View Container - FORCED 65/35 distribution on ALL screens -->
-        <div id="pos-view" class="flex flex-col sm:flex-row gap-6 h-full">
-
-            <!-- Column 1: Categories and Menu Items - 65% width on ALL screens -->
-            <section class="w-2/3 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
-                <!-- Category Tabs -->
-                <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0">
-                    <!-- Buttons will be rendered here -->
-                </div>
-
-                <!-- Menu Items Display - UPDATED: grid-cols-2 md:grid-cols-4 -->
-                <div id="menu-items" class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-grow custom-scroll overflow-y-auto p-2 bg-white rounded-xl shadow-lg">
-                    <!-- Menu items will be rendered here -->
-                </div>
-            </section>
-
-            <!-- Column 2: Order Summary (Cart) - 35% width on ALL screens -->
-            <section class="w-1/3 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
-                <!-- Title with Order Number - UPDATED TO "Order" -->
-                <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
-                    <span>Order</span>
-                    <!-- UPDATED: Display dynamic order number only -->
-                    <span id="order-number-display" class="text-lg font-extrabold text-gray-500 bg-gray-100 p-1 rounded">001</span>
-                </h2>
-
-                <!-- Cart Items List -->
-                <div id="cart-items-list" class="flex-grow custom-scroll overflow-y-auto space-y-3 pr-2 mb-4">
-                    <!-- Cart items will be rendered here -->
-                </div>
-
-                <!-- Total Summary -->
-                <div id="cart-summary" class="border-t pt-4 space-y-2 flex-shrink-0">
-                    <div class="flex justify-between items-center text-lg">
-                        <span class="font-medium text-gray-700">Subtotal:</span>
-                        <span id="subtotal-amount" class="font-semibold text-gray-700">$0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center text-2xl font-extrabold color-primary rounded-lg p-2 shadow-inner">
-                        <span class="text-gray-800">TOTAL:</span>
-                        <span id="total-amount" class="text-gray-800">$0.00</span>
-                    </div>
-                    
-                    <!-- START OF BUTTON CHANGES (Side-by-side) -->
-                    <div class="flex space-x-2"> 
-                        <button onclick="clearOrder()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
-                            Clear
-                        </button>
-                        <button onclick="checkout()" class="flex-1 py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
-                            Pay
-                        </button>
-                    </div>
-                    <!-- END OF BUTTON CHANGES -->
-                    
-                    <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Reports View Container (Placeholder + Charts) -->
-        <div id="reports-view" class="hidden w-full h-full p-4 bg-white rounded-xl shadow-lg space-y-6">
-            <h2 class="text-3xl font-extrabold text-primary mb-4 border-b pb-2">Daily Sales Report</h2>
-            
-            <!-- NEW: Report Range Selector -->
-            <div id="report-range-selector" class="flex space-x-3 mb-4">
-                <button onclick="changeReportRange('DAILY')" id="report-daily-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-200 text-gray-800">Daily (Hourly)</button>
-                <button onclick="changeReportRange('WEEKLY')" id="report-weekly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Weekly (7 Days)</button>
-                <button onclick="changeReportRange('MONTHLY')" id="report-monthly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Monthly (30 Days)</button>
-            </div>
-
-            <!-- Key Metrics -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
-                    <!-- ADDED ID FOR DYNAMIC TEXT UPDATE -->
-                    <p class="text-sm text-gray-500" id="revenue-period-text">Revenue (Today)</p>
-                    <p class="text-2xl font-bold text-green-600" id="revenue-value">$542.50</p>
-                </div>
-                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
-                    <p class="text-sm text-gray-500">Orders Processed</p>
-                    <p class="text-2xl font-bold text-indigo-600" id="orders-processed-value">47</p>
-                </div>
-                <!-- Top Flavor Report Section -->
-                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
-                    <p class="text-sm text-gray-500">Top Flavor</p>
-                    <p class="text-2xl font-bold text-primary">Strawberry</p>
-                </div>
-                <!-- REMAINING TOP SELLER SECTION -->
-                <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
-                    <p class="text-sm text-gray-500">Top Seller (Item)</p>
-                    <p class="text-2xl font-bold text-primary">Triple Cone</p>
-                </div>
-            </div>
-
-            <!-- Charts Row -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Bar Graph Container -->
-                <div id="bar-chart-container" class="chart-container">
-                    <div class="chart-title">Hourly Sales Distribution</div>
+    <!-- === MAIN APP VIEW START (Hidden by default) === -->
+    <div id="main-app" class="hidden flex flex-col min-h-screen">
+        <!-- Header -->
+        <header class="shadow-md p-4 bg-white sticky top-0 z-10">
+            <div class="flex items-center justify-between max-w-7xl mx-auto relative">
+                <button id="view-toggle-button" onclick="window.changeView()" class="px-3 py-2 bg-gray-100 rounded-lg text-sm font-semibold hover:bg-gray-200 transition duration-150 flex-shrink-0 z-20">
+                    Reports
+                </button>
+                
+                <!-- Logo only in Header -->
+                <div class="flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2 z-10">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPS5zwGLxGd_KfvsmJNtiSzMJ7FRXkldtRYdgULdH2XAhA1rDQ1xOAfn1hGRhxP3iRORxQEjo3xQrBaP2-deFculm9AIGTDMUtlid-lJDdPPpJlpak=w2400" alt="Logo" class="h-12 w-auto object-contain">
                 </div>
                 
-                <!-- Pie Chart Container -->
-                <div id="pie-chart-container" class="chart-container">
-                    <div class="chart-title">Sales Percentage by Flavor</div>
+                <div class="flex items-center space-x-4 flex-shrink-0 ml-auto z-20">
+                    <div id="date-time-display" class="text-sm font-medium text-gray-700 text-center">
+                        <span class="text-lg font-bold text-gray-800">00:00:00 AM</span>
+                        <span class="text-xs text-gray-500">Loading Date...</span>
+                    </div>
+
+                    <div id="auth-status" class="flex items-center space-x-3 text-sm font-medium text-gray-600">
+                        <span id="user-id-display" class="hidden">User: <span class="font-mono text-xs p-1 rounded bg-gray-100"></span></span>
+                        <button onclick="window.handleLogout()" class="px-3 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition font-bold text-xs">Logout</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-    </main>
+        <main id="app-content" class="flex-grow max-w-7xl mx-auto w-full p-4">
+            <div id="pos-view" class="flex flex-col sm:flex-row gap-6 h-full">
+                <section class="w-2/3 flex flex-col space-y-4 h-[calc(100vh-8rem)]">
+                    <div id="category-tabs" class="flex flex-wrap gap-2 p-2 rounded-xl shadow-inner bg-white flex-shrink-0"></div>
+                    <div id="menu-items" class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-grow custom-scroll overflow-y-auto p-2 bg-white rounded-xl shadow-lg"></div>
+                </section>
 
-    <!-- Modal for Flavor Selection -->
+                <section class="w-1/3 flex flex-col bg-white rounded-xl shadow-lg p-4 h-[calc(100vh-8rem)]">
+                    <h2 class="text-2xl font-bold text-primary mb-4 border-b pb-2 flex-shrink-0 flex justify-between items-center">
+                        <span>Order</span>
+                        <span id="order-number-display" class="text-lg font-extrabold text-gray-500 bg-gray-100 p-1 rounded">001</span>
+                    </h2>
+                    <div id="cart-items-list" class="flex-grow custom-scroll overflow-y-auto space-y-3 pr-2 mb-4"></div>
+                    <div id="cart-summary" class="border-t pt-4 space-y-2 flex-shrink-0">
+                        <div class="flex justify-between items-center text-lg">
+                            <span class="font-medium text-gray-700">Subtotal:</span>
+                            <span id="subtotal-amount" class="font-semibold text-gray-700">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-2xl font-extrabold color-primary rounded-lg p-2 shadow-inner">
+                            <span class="text-gray-800">TOTAL:</span>
+                            <span id="total-amount" class="text-gray-800">$0.00</span>
+                        </div>
+                        <div class="flex space-x-2"> 
+                            <button onclick="window.clearOrder()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="clear-order-btn">
+                                Clear
+                            </button>
+                            <button onclick="window.checkout()" class="flex-1 py-3 color-secondary hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.01] disabled:opacity-50" disabled id="checkout-btn">
+                                Pay
+                            </button>
+                        </div>
+                        <div id="message-box" class="mt-4 hidden p-3 rounded-lg text-center font-semibold transition-opacity duration-300"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Reports View Container -->
+            <div id="reports-view" class="hidden w-full h-full p-4 bg-white rounded-xl shadow-lg space-y-6">
+                <h2 class="text-3xl font-extrabold text-primary mb-4 border-b pb-2">Daily Sales Report</h2>
+                <div id="report-range-selector" class="flex space-x-3 mb-4">
+                    <button onclick="window.changeReportRange('DAILY')" id="report-daily-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-200 text-gray-800">Daily (Hourly)</button>
+                    <button onclick="window.changeReportRange('WEEKLY')" id="report-weekly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Weekly (7 Days)</button>
+                    <button onclick="window.changeReportRange('MONTHLY')" id="report-monthly-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Monthly (30 Days)</button>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                        <p class="text-sm text-gray-500" id="revenue-period-text">Revenue (Today)</p>
+                        <p class="text-2xl font-bold text-green-600" id="revenue-value">$542.50</p>
+                    </div>
+                    <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                        <p class="text-sm text-gray-500">Orders Processed</p>
+                        <p class="text-2xl font-bold text-indigo-600" id="orders-processed-value">47</p>
+                    </div>
+                    <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                        <p class="text-sm text-gray-500">Top Flavor</p>
+                        <p class="text-2xl font-bold text-primary">Strawberry</p>
+                    </div>
+                    <div class="p-4 bg-gray-100 rounded-xl shadow-inner">
+                        <p class="text-sm text-gray-500">Top Seller (Item)</p>
+                        <p class="text-2xl font-bold text-primary">Triple Cone</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div id="bar-chart-container" class="chart-container">
+                        <div class="chart-title">Hourly Sales Distribution</div>
+                    </div>
+                    <div id="pie-chart-container" class="chart-container">
+                        <div class="chart-title">Sales Percentage by Flavor</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- === MAIN APP VIEW END === -->
+
+    <!-- Modals -->
     <div id="flavor-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-20 hidden flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-2xl transform transition-all duration-300 scale-100">
             <h3 class="text-2xl font-bold text-primary mb-4">Select Flavors</h3>
             <p id="flavor-modal-item-name" class="text-lg font-semibold text-gray-700 mb-4"></p>
-            
-            <!-- Scoop Selection Indicators -->
-            <div id="scoop-indicators" class="flex flex-wrap gap-3 p-3 bg-gray-50 rounded-lg mb-4 border border-gray-200">
-                <!-- Scoop indicator buttons will be inserted here -->
-            </div>
-
-            <!-- Single Flavor Grid Container -->
-            <div id="single-flavor-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-3 custom-scroll overflow-y-auto max-h-96 p-2 border-b pb-4">
-                <!-- Flavor and Action buttons will be inserted here -->
-            </div>
-            
+            <div id="scoop-indicators" class="flex flex-wrap gap-3 p-3 bg-gray-50 rounded-lg mb-4 border border-gray-200"></div>
+            <div id="single-flavor-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-3 custom-scroll overflow-y-auto max-h-96 p-2 border-b pb-4"></div>
             <p id="flavor-error" class="text-red-500 text-sm mt-3 hidden"></p>
         </div>
     </div>
     
-    <!-- Modal for Topping Selection -->
     <div id="topping-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-20 hidden flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-xl transform transition-all duration-300 scale-100">
             <h3 class="text-2xl font-bold text-primary mb-4">Add Toppings</h3>
             <p id="topping-modal-item-name" class="text-lg font-semibold text-gray-700 mb-4"></p>
-            
-            <!-- Topping Selection Grid -->
-            <div id="topping-selection-grid" class="grid grid-cols-3 gap-3 custom-scroll overflow-y-auto max-h-80 p-2 border-b pb-4">
-                <!-- Topping buttons will be inserted here -->
-            </div>
-            
-            <p class="text-sm text-gray-500 mt-4">Select multiple toppings.</p>
-
+            <div id="topping-selection-grid" class="grid grid-cols-3 gap-3 custom-scroll overflow-y-auto max-h-80 p-2 border-b pb-4"></div>
             <div class="mt-4 flex justify-end space-x-3">
-                <button onclick="window.closeToppingModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition duration-150">Cancel</button>
-                <button onclick="window.confirmToppings()" class="px-4 py-2 color-secondary text-white rounded-lg hover:bg-green-700 font-bold transition duration-150">Save Toppings</button>
+                <button onclick="window.closeToppingModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium">Cancel</button>
+                <button onclick="window.confirmToppings()" class="px-4 py-2 color-secondary text-white rounded-lg font-bold">Save Toppings</button>
             </div>
         </div>
     </div>
     
-    <!-- Modal for Payment Method -->
     <div id="payment-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-20 hidden flex items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-sm transform transition-all duration-300 scale-100">
-            <h3 class="text-2xl font-bold text-primary mb-4">Select Payment Method</h3>
-            <p class="text-lg font-semibold text-gray-700 mb-4">Order Total: <span id="payment-modal-total">$0.00</span></p>
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-md transform transition-all duration-300 scale-100">
+            <h3 class="text-2xl font-bold text-primary mb-4">Split Payment</h3>
+            <p class="text-lg font-semibold text-gray-700 mb-2">Order Total: <span id="payment-modal-total">$0.00</span></p>
+            <p class="text-sm font-bold text-red-600 mb-4">Remaining: <span id="payment-remaining">$0.00</span></p>
             
-            <!-- Payment Buttons -->
-            <div class="grid grid-cols-2 gap-4 mb-4" id="payment-method-selector">
-                <button onclick="window.selectPaymentMethod('Currency')" data-method="Currency" class="payment-method-btn py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Currency</button>
-                <button onclick="window.selectPaymentMethod('Debit')" data-method="Debit" class="payment-method-btn py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Debit</button>
-                <button onclick="window.selectPaymentMethod('Credit')" data-method="Credit" class="payment-method-btn py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Credit</button>
-                <button onclick="window.selectPaymentMethod('Transfer')" data-method="Transfer" class="payment-method-btn py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition duration-150 shadow-md">Transfer</button>
-            </div>
-            
-            <!-- Tendered Amount Input -->
-            <div id="tendered-input-section" class="space-y-3 p-3 border rounded-lg bg-gray-50 hidden">
-                <label for="amount-tendered" class="block text-sm font-medium text-gray-700">Amount Tendered (Currency):</label>
-                <input type="number" id="amount-tendered" oninput="window.calculateChange()" step="0.01" min="0" placeholder="0.00" class="w-full p-2 border border-gray-300 rounded-lg text-2xl font-mono focus:ring-secondary focus:border-secondary">
-            </div>
-
-            <!-- Change Summary -->
-            <div class="mt-4 pt-4 border-t space-y-2">
-                <div class="flex justify-between font-medium text-gray-700">
-                    <span>Tendered:</span>
-                    <span id="tendered-total" class="font-semibold text-gray-800">$0.00</span>
+            <div class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scroll mb-4">
+                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border">
+                    <span class="w-20 font-bold text-blue-600">Cash:</span>
+                    <input type="number" id="pay-Currency" oninput="window.calculateSplitChange()" step="0.01" min="0" placeholder="0.00" class="flex-grow p-2 border rounded font-mono text-lg">
                 </div>
-                <div class="flex justify-between font-extrabold text-xl">
-                    <span>Change Due:</span>
-                    <span id="change-due" class="text-red-500">$0.00</span>
+                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border">
+                    <span class="w-20 font-bold text-indigo-600">Debit:</span>
+                    <input type="number" id="pay-Debit" oninput="window.calculateSplitChange()" step="0.01" min="0" placeholder="0.00" class="flex-grow p-2 border rounded font-mono text-lg">
+                </div>
+                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border">
+                    <span class="w-20 font-bold text-purple-600">Credit:</span>
+                    <input type="number" id="pay-Credit" oninput="window.calculateSplitChange()" step="0.01" min="0" placeholder="0.00" class="flex-grow p-2 border rounded font-mono text-lg">
+                </div>
+                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border">
+                    <span class="w-20 font-bold text-teal-600">Transfer:</span>
+                    <input type="number" id="pay-Transfer" oninput="window.calculateSplitChange()" step="0.01" min="0" placeholder="0.00" class="flex-grow p-2 border rounded font-mono text-lg">
                 </div>
             </div>
 
+            <div class="mt-4 pt-4 border-t space-y-1">
+                <div class="flex justify-between font-medium text-gray-700"><span>Total Paid:</span><span id="tendered-total">$0.00</span></div>
+                <div class="flex justify-between font-extrabold text-xl"><span>Change Due:</span><span id="change-due" class="text-red-500">$0.00</span></div>
+            </div>
             <div class="mt-6 flex justify-between space-x-3">
-                <button onclick="window.closePaymentModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition duration-150">Cancel</button>
-                <button onclick="window.completeSale()" id="complete-sale-btn" class="px-4 py-2 color-secondary text-white rounded-lg hover:bg-green-700 font-bold transition duration-150 disabled:opacity-50" disabled>Complete Sale</button>
+                <button onclick="window.closePaymentModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium">Cancel</button>
+                <button onclick="window.completeSale()" id="complete-sale-btn" class="px-4 py-2 color-secondary text-white rounded-lg font-bold disabled:opacity-50" disabled>Complete Sale</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Receipt Print Preview -->
     <div id="receipt-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-30 hidden flex items-center justify-center">
         <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full">
             <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Sale Successful!</h3>
-            
-            <!-- Printable Area -->
             <div id="printable-receipt-area" class="bg-white p-4 border border-gray-200 receipt-font text-sm text-black">
                 <div class="text-center mb-4">
-                    <h1 class="text-lg font-bold">HELARTE</h1>
-                    <p>Ice Cream Shop</p>
-                    <p id="receipt-date">Date: Loading...</p>
-                    <p id="receipt-order-no">Order: #001</p>
+                    <!-- Logo (50% bigger: from h-16 to h-24) -->
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPS5zwGLxGd_KfvsmJNtiSzMJ7FRXkldtRYdgULdH2XAhA1rDQ1xOAfn1hGRhxP3iRORxQEjo3xQrBaP2-deFculm9AIGTDMUtlid-lJDdPPpJlpak=w2400" alt="Helarte Logo" class="h-24 w-auto mx-auto mb-2 object-contain">
+                    <p>Hel-Arte De hacer la Fruta Nieve</p>
+                    <p id="receipt-date"></p>
+                    <p id="receipt-order-no"></p>
                 </div>
                 <hr class="border-dashed border-gray-400 mb-2">
-                <div id="receipt-items-list" class="space-y-1 mb-4">
-                    <!-- Items will go here -->
-                </div>
+                <div id="receipt-items-list" class="space-y-1 mb-4"></div>
                 <hr class="border-dashed border-gray-400 mb-2">
                 <div class="space-y-1">
-                    <div class="flex justify-between font-bold">
-                        <span>TOTAL</span>
-                        <span id="receipt-total">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span>Payment Method:</span>
-                        <span id="receipt-payment-method">N/A</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span>Tendered:</span>
-                        <span id="receipt-tendered">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span>Change:</span>
-                        <span id="receipt-change">$0.00</span>
-                    </div>
+                    <div class="flex justify-between font-bold"><span>TOTAL</span><span id="receipt-total"></span></div>
+                    <div id="receipt-payment-methods" class="pt-2 border-t mt-2"></div>
+                    <div class="flex justify-between text-xs pt-2"><span>Tendered:</span><span id="receipt-tendered"></span></div>
+                    <div class="flex justify-between text-xs"><span>Change:</span><span id="receipt-change"></span></div>
                 </div>
-                <div class="text-center mt-6 text-xs italic">
-                    <p>Thank you for your visit!</p>
-                    <p>Enjoy your Helarte!</p>
-                </div>
+                <div class="text-center mt-6 text-xs italic"><p>Thank you for your visit!</p><p>Enjoy your Helarte!</p></div>
             </div>
-
             <div class="mt-6 flex flex-col space-y-2">
                 <button onclick="window.printReceipt()" class="w-full py-3 color-secondary text-white font-bold rounded-xl shadow-lg transition duration-150 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     <span>Print Receipt</span>
                 </button>
-                <button onclick="window.closeReceiptModal()" class="w-full py-2 bg-gray-200 text-gray-700 font-bold rounded-xl transition duration-150">
-                    Done
-                </button>
+                <button onclick="window.closeReceiptModal()" class="w-full py-2 bg-gray-200 text-gray-700 font-bold rounded-xl transition duration-150">Done</button>
             </div>
         </div>
     </div>
-    <!-- === HTML STRUCTURE SECTION END === -->
-
 
     <!-- === JAVASCRIPT LOGIC SECTION START === -->
-
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global Firebase and App Variables
-        window.firebaseApp = null;
-        window.db = null;
-        window.auth = null;
-        window.userId = null;
+        // Constants & Utilities
+        window.pad2 = (n) => String(n).padStart(2, '0');
+        
+        window.formatCurrency = (amount) => {
+            const roundedAmount = Math.round(amount * 100) / 100; 
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(roundedAmount);
+        };
+
+        const TOPPING_PRICE = 0.50;
         window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pos-app';
         window.firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         window.initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // Global Constants
-        const TOPPING_PRICE = 0.50; // Price per topping
-
-        // Global State for Modals
+        // State
+        window.activeCart = []; 
+        window.currentCategory = 'scoops'; 
         let itemPendingFlavor = null; 
         let pendingFlavors = [];      
         let currentScoopIndex = 0;    
-        
         let itemPendingToppingsId = null; 
         let pendingToppings = [];         
-        
-        // View Management
-        let currentPage = 'POS'; 
+        let currentPage = 'LOGIN'; 
         let currentReportRange = 'DAILY'; 
-        
-        // Payment State
         let currentOrderTotal = 0;
-        let selectedPaymentMethod = null;
+        
+        let paymentMethods = { Currency: 0, Debit: 0, Credit: 0, Transfer: 0 };
 
-        // Set log level for debugging Firestore issues
-        setLogLevel('debug');
+        const VALID_USER = "0test0US";
+        const VALID_PASS = "0test0PASS";
 
-        // Menu and Flavors Data
+        // Data Models
         const MENU = {
             "scoops": [
                 { name: "Single Cone", price: 4.00, scoops: 1, isFlavorRequired: true },
@@ -443,539 +392,378 @@
                 { name: "Flan", price: 4.50, isFlavorRequired: false }            
             ]
         };
-        
-        const SCOOP_FLAVORS = [
-            "Chocolate", "Vanilla", "Nut", "Strawberry", "Cookie",
-            "Oreo", "Abuelita", "Gansito", "Pinguino", "Chocoroles", 
-            "Mango", "Bubblegum", "Chamoy", "Lime", "Coconut"
-        ];
-        
-        const TOPPINGS = [
-            "Sprinkles", "Whipped Cream", "Chocolate Sauce", "Caramel Sauce", 
-            "Chopped Nuts", "Cherries", "Brownie Bites", "Oreo Crumble",
-            "Mochi", "Cinnamon", "Extra Chamoy", "Tajin"
-        ];
 
         const ITEM_FLAVOR_MAPPING = {
-            "Water Pop": ["Grape", "Lime", "Lemon", "Watermelon", "Melon", "Strawberry"],
-            "Cream Pop": ["Mango", "Strawberry", "Cookie", "Vanilla", "Chocolate", "Oreo", "Nut", "Fruit"],
-            "Milkshake": SCOOP_FLAVORS 
+            "Water Pop": ["Grape", "Lime", "Lemon", "Watermelon", "Strawberry"],
+            "Cream Pop": ["Mango", "Strawberry", "Cookie", "Vanilla", "Chocolate"],
+            "Milkshake": ["Chocolate", "Vanilla", "Strawberry", "Oreo", "Mango"]
         };
 
-        // D3 Placeholder Data
-        const HOURLY_SALES_DATA = [
-            { hour: '9 AM', sales: 40 }, { hour: '10 AM', sales: 65 }, { hour: '11 AM', sales: 90 }, 
-            { hour: '12 PM', sales: 150 }, { hour: '1 PM', sales: 120 }, { hour: '2 PM', sales: 80 }, 
-            { hour: '3 PM', sales: 110 }, { hour: '4 PM', sales: 130 }, { hour: '5 PM', sales: 160 }, 
-            { hour: '6 PM', sales: 140 },
-        ];
-        
-        const WEEKLY_SALES_DATA = [
-            { day: 'Mon', sales: 600 }, { day: 'Tue', sales: 750 }, { day: 'Wed', sales: 520 }, 
-            { day: 'Thu', sales: 900 }, { day: 'Fri', sales: 1100 }, { day: 'Sat', sales: 1400 }, 
-            { day: 'Sun', sales: 1550 },
-        ];
+        const SCOOP_FLAVORS = ["Chocolate", "Vanilla", "Nut", "Strawberry", "Cookie", "Oreo", "Abuelita", "Gansito", "Mango", "Bubblegum", "Lime", "Coconut"];
+        const TOPPINGS = ["Sprinkles", "Whipped Cream", "Choc Sauce", "Caramel", "Nuts", "Cherries", "Brownies", "Oreo Crumble", "Tajin"];
+        const REPORT_METRICS = { 'DAILY': { revenue: 542.50, orders: 47 }, 'WEEKLY': { revenue: 4850.75, orders: 320 }, 'MONTHLY': { revenue: 19800.00, orders: 1250 } };
+        const HOURLY_SALES_DATA = [{hour:'9 AM', sales:40},{hour:'10 AM', sales:65},{hour:'11 AM', sales:90},{hour:'12 PM', sales:150},{hour:'1 PM', sales:120},{hour:'2 PM', sales:80},{hour:'3 PM', sales:110},{hour:'4 PM', sales:130},{hour:'5 PM', sales:160},{hour:'6 PM', sales:140}];
+        const WEEKLY_SALES_DATA = [{day:'Mon', sales:600},{day:'Tue', sales:750},{day:'Wed', sales:520},{day:'Thu', sales:900},{day:'Fri', sales:1100},{day:'Sat', sales:1400},{day:'Sun', sales:1550}];
+        const MONTHLY_SALES_DATA = Array.from({length:30}, (_,i)=>({period:`${i+1}`, sales: Math.floor(Math.random()*300)+100}));
 
-        const MONTHLY_SALES_DATA = [];
-        for (let i = 1; i <= 30; i++) {
-            const sales = Math.floor(Math.random() * 300) + 100;
-            MONTHLY_SALES_DATA.push({ period: `${i}`, sales: sales });
-        }
-        
-        const FLAVOR_SALES_DATA = [
-            { flavor: 'Vanilla', value: 300 }, { flavor: 'Strawberry', value: 250 }, 
-            { flavor: 'Chocolate', value: 180 }, { flavor: 'Oreo', value: 120 },
-            { flavor: 'Mango', value: 80 }, { flavor: 'Lime', value: 70 },
-        ];
-        
-        const REPORT_METRICS = {
-            'DAILY': { revenue: 542.50, orders: 47 },
-            'WEEKLY': { revenue: 4850.75, orders: 320 },
-            'MONTHLY': { revenue: 19800.00, orders: 1250 }
+        const MENU_ICONS = {
+            cone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-red-500"><path d="M12 22l-6-14h12l-6 14zM12 2a4 4 0 014 4H8a4 4 0 014-4z"/></svg>`,
+            cup: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-purple-500"><path d="M4 8h16l-2 10H6L4 8zM12 2v6"/></svg>`,
+            pop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-blue-500"><path d="M8 2h8a2 2 0 012 2v10a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2zM12 16v6"/></svg>`,
+            drink: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-yellow-600"><path d="M6 20h12l1-15H5l1 15zM19 2l-2 3M5 2l2 3"/></svg>`,
+            food: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full text-gray-500"><path d="M3 11h18l-1 9H4l-1-9zM9 11V3m6 8V3"/></svg>`
         };
 
-        // Global State
-        window.activeCart = []; 
-        window.currentCategory = 'scoops'; 
-
-        // Utilities
-        window.formatCurrency = (amount) => {
-            const roundedAmount = Math.round(amount * 100) / 100; 
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(roundedAmount);
+        window.getMenuIcon = (name) => {
+            const n = name.toLowerCase();
+            if (n.includes('cone')) return MENU_ICONS.cone;
+            if (n.includes('cup') || n.includes('split')) return MENU_ICONS.cup;
+            if (n.includes('pop')) return MENU_ICONS.pop;
+            if (n.includes('coffee') || n.includes('latte') || n.includes('tea') || n.includes('soda') || n.includes('shake')) return MENU_ICONS.drink;
+            return MENU_ICONS.food;
         };
 
-        const pad2 = (num) => String(num).padStart(2, '0');
-        
-        const getPlaceholderUrl = (name) => {
-            const base = "https://placehold.co/100x100";
-            switch (name) {
-                case "Single Cone": return `${base}/e74c3c/ffffff?text=1+CONE`;
-                case "Double Cone": return `${base}/e74c3c/ffffff?text=2+CONES`;
-                case "Triple Cone": return `${base}/e74c3c/ffffff?text=3+CONES`;
-                case "Single Cup": return `${base}/9b59b6/ffffff?text=1+CUP`;
-                case "Double Cup": return `${base}/9b59b6/ffffff?text=2+CUPS`;
-                case "Triple Cup": return `${base}/9b59b6/ffffff?text=3+CUPS`;
-                case "Banana Split": return `${base}/f8f870/8e44ad?text=SPLIT`;
-                case "Water Pop": return `${base}/3498db/ffffff?text=WATER+POP`; 
-                case "Cream Pop": return `${base}/f39c12/ffffff?text=CREAM+POP`;
-                case "Coffee": return `${base}/c49a62/ffffff?text=COFFEE`;
-                case "Latte": return `${base}/c49a62/ffffff?text=LATTE`;
-                case "Milkshake": return `${base}/93c5fd/8e44ad?text=SHAKE`;
-                case "Tea": return `${base}/94b465/ffffff?text=TEA`;
-                case "Soda": return `${base}/fb7185/ffffff?text=SODA`;
-                case "Crepe": return `${base}/fecaca/8e44ad?text=CREPE`;
-                case "French Fries": return `${base}/facc15/8e44ad?text=FRIES`;
-                case "Sandwich": return `${base}/9ca3af/ffffff?text=SANDWICH`;
-                case "Pork & Fries": return `${base}/f39c12/ffffff?text=PORK`;
-                case "Cake": return `${base}/f1c40f/8e44ad?text=CAKE`;
-                case "Flan": return `${base}/d35400/ffffff?text=FLAN`;
-                default: return `${base}/e0e0e0/555555?text=ITEM`;
+        // --- AUTH Handlers ---
+        window.handleLogin = () => {
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            if (user === VALID_USER && pass === VALID_PASS) {
+                currentPage = 'POS';
+                errorEl.classList.add('hidden');
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                window.renderApp();
+            } else {
+                errorEl.classList.remove('hidden');
             }
         };
 
-        // --- FIREBASE INITIALIZATION & AUTH ---
-
-        const initFirebaseAndAuth = async () => {
-            try {
-                if (Object.keys(window.firebaseConfig).length === 0) {
-                    console.warn("Firebase configuration is missing.");
-                    document.getElementById('loading-auth').textContent = 'DB Disabled';
-                    document.getElementById('user-id-display').querySelector('span').textContent = 'Local Mode';
-                    document.getElementById('user-id-display').classList.remove('hidden');
-                    window.updateCartDisplay();
-                    return;
-                }
-                window.firebaseApp = initializeApp(window.firebaseConfig);
-                window.db = getFirestore(window.firebaseApp);
-                window.auth = getAuth(window.firebaseApp);
-                if (window.initialAuthToken) {
-                    await signInWithCustomToken(window.auth, window.initialAuthToken);
-                } else {
-                    await signInAnonymously(window.auth);
-                }
-                onAuthStateChanged(window.auth, (user) => {
-                    document.getElementById('loading-auth').classList.add('hidden');
-                    const userIdDisplay = document.getElementById('user-id-display');
-                    const userIdSpan = userIdDisplay.querySelector('span');
-                    if (user) {
-                        window.userId = user.uid;
-                        userIdSpan.textContent = window.userId;
-                        userIdDisplay.classList.remove('hidden');
-                        setupCartListener();
-                    } else {
-                        window.userId = null;
-                        userIdSpan.textContent = 'N/A';
-                    }
-                });
-            } catch (error) {
-                console.error("Firebase error:", error);
-                document.getElementById('loading-auth').textContent = 'Error loading Firebase.';
-            }
+        window.handleLogout = () => {
+            currentPage = 'LOGIN';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
         };
 
-        const setupCartListener = () => {
-            const docRef = getOrderDocRef();
-            if (!docRef) return;
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    window.activeCart = data.items || [];
-                } else {
-                    window.activeCart = [];
-                }
-                window.updateCartDisplay();
-            }, (error) => {
-                console.error("Error listening to cart changes:", error);
-            });
-        };
-
-        const updateCartInFirestore = async (cart) => {
-            const docRef = getOrderDocRef();
-            if (!docRef) {
-                window.updateCartDisplay();
-                return; 
-            }
-            try {
-                await setDoc(docRef, { items: cart });
-            } catch (error) {
-                console.error("Error saving cart:", error);
-            }
-        };
-
-        // --- POS RENDERING AND LOGIC ---
-
+        // UI Core Handlers
         window.renderCategories = () => {
-            const tabsContainer = document.getElementById('category-tabs');
-            tabsContainer.innerHTML = '';
-            Object.keys(MENU).forEach(categoryKey => {
-                const button = document.createElement('button');
-                button.textContent = categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1);
-                button.className = `px-4 py-2 font-semibold rounded-lg transition duration-150 ${
-                    categoryKey === window.currentCategory
-                        ? 'color-primary text-gray-800 shadow-md'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`;
-                button.onclick = () => {
-                    window.currentCategory = categoryKey;
-                    window.renderCategories();
-                    window.renderMenuItems(categoryKey);
-                };
-                tabsContainer.appendChild(button);
-            });
+            const tabs = document.getElementById('category-tabs');
+            tabs.innerHTML = Object.keys(MENU).map(k => `
+                <button onclick="window.currentCategory='${k}'; window.renderCategories(); window.renderMenuItems('${k}')" 
+                        class="px-4 py-2 font-semibold rounded-lg ${k===window.currentCategory ? 'color-primary shadow-md text-gray-800' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}">${k.toUpperCase()}</button>
+            `).join('');
         };
 
-        window.renderMenuItems = (categoryKey) => {
-            const itemsContainer = document.getElementById('menu-items');
-            itemsContainer.innerHTML = '';
-            const items = MENU[categoryKey] || [];
-            if (items.length === 0) {
-                itemsContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center p-8">No items.</p>';
-                return;
-            }
-            items.forEach((item) => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition duration-200 cursor-pointer overflow-hidden flex flex-col justify-between transform hover:-translate-y-0.5 hover:shadow-primary/50';
-                itemCard.setAttribute('data-name', item.name);
-                itemCard.setAttribute('data-price', item.price);
-                itemCard.setAttribute('data-scoops', item.scoops || 0);
-                itemCard.setAttribute('data-flavor-required', item.isFlavorRequired);
-                itemCard.setAttribute('onclick', 'window.addItemToCart(this)');
-                itemCard.innerHTML = `
-                    <div class="p-4 flex flex-col items-center text-center flex-grow justify-center">
-                        <img src="${getPlaceholderUrl(item.name)}" alt="${item.name}" 
-                            class="w-20 h-20 rounded-full mb-3 object-cover shadow-md border-2 border-primary" 
-                            onerror="this.onerror=null;this.src='https://placehold.co/100x100/e0e0e0/555555?text=ITEM';" />
-                        <p class="text-xl font-bold text-gray-800">${item.name}</p>
-                        <p class="text-3xl font-extrabold text-primary">${window.formatCurrency(item.price)}</p>
+        window.renderMenuItems = (cat) => {
+            const items = document.getElementById('menu-items');
+            if (!MENU[cat]) return;
+            items.innerHTML = MENU[cat].map(i => `
+                <div onclick="window.addItemToCart(this)" data-name="${i.name}" data-price="${i.price}" data-scoops="${i.scoops||0}" data-flavor-required="${i.isFlavorRequired}"
+                     class="relative aspect-square bg-white border rounded-xl shadow cursor-pointer hover:shadow-lg transition group overflow-hidden flex flex-col items-center justify-center p-4">
+                    
+                    <div class="absolute inset-0 flex items-center justify-center p-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                        ${window.getMenuIcon(i.name)}
                     </div>
-                `;
-                itemsContainer.appendChild(itemCard);
-            });
+                    
+                    <div class="relative z-10 text-center flex flex-col items-center">
+                        <p class="font-bold text-gray-800 leading-tight mb-1 drop-shadow-sm text-lg">${i.name}</p>
+                        <p class="text-2xl font-black text-lime-700 drop-shadow-md">${window.formatCurrency(i.price)}</p>
+                    </div>
+                </div>
+            `).join('');
         };
 
-        window.addItemToCart = (element) => { 
-            const { name, price, scoops, flavorRequired } = element.dataset;
-            const basePrice = parseFloat(price);
-            const item = {
-                id: Date.now() + Math.random(),
-                name: name,
-                basePrice: basePrice,
-                price: basePrice,
-                toppingCost: 0,
-                quantity: 1,
-                scoops: parseInt(scoops),
-                isFlavorRequired: flavorRequired === 'true',
-                flavors: [],
+        window.addItemToCart = (el) => {
+            const d = el.dataset;
+            const item = { 
+                id: Date.now()+Math.random(), 
+                name: d.name, 
+                basePrice: parseFloat(d.price), 
+                price: parseFloat(d.price), 
+                quantity: 1, 
+                scoops: parseInt(d.scoops), 
+                isFlavorRequired: d.flavorRequired === 'true', 
+                flavors: [], 
                 toppings: [] 
             };
-            if (item.isFlavorRequired) {
-                window.openFlavorModal(item);
-            } else {
-                window.activeCart.push(item);
-                updateCartInFirestore(window.activeCart);
-                window.showMessageBox(`Added ${item.name}!`, 'bg-blue-100 text-blue-700');
-            }
+            if (item.isFlavorRequired) window.openFlavorModal(item);
+            else { window.activeCart.push(item); window.updateCartInFirestore(window.activeCart); }
         };
 
         window.updateCartDisplay = () => {
             const list = document.getElementById('cart-items-list');
-            list.innerHTML = '';
-            let subtotal = 0;
-            if (window.activeCart.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-500 p-8">Your order is empty.</p>';
+            let sub = 0;
+            if (!window.activeCart || window.activeCart.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-400 py-8 italic">No items in order</p>';
                 document.getElementById('checkout-btn').disabled = true;
                 document.getElementById('clear-order-btn').disabled = true;
-                document.getElementById('subtotal-amount').textContent = window.formatCurrency(0);
-                document.getElementById('total-amount').textContent = window.formatCurrency(0);
+                document.getElementById('subtotal-amount').textContent = '$0.00';
+                document.getElementById('total-amount').textContent = '$0.00';
                 return;
             }
-            window.activeCart.forEach((item, index) => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                const listItem = document.createElement('div');
-                listItem.className = 'flex flex-col p-3 bg-white rounded-xl shadow-lg border border-gray-100';
-                listItem.innerHTML = `
-                    <div class="flex justify-between items-start">
+            list.innerHTML = window.activeCart.map((i, idx) => {
+                sub += i.price * i.quantity;
+                return `
+                <div class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between">
                         <div class="flex-grow">
-                            <p class="text-lg font-bold text-gray-800">${item.name}</p>
-                            <p class="text-sm text-gray-500">${item.quantity} @ ${window.formatCurrency(item.price)}</p>
-                            <div class="text-xs text-gray-600 italic mt-1">${item.flavors.length > 0 ? item.flavors.join(', ') : ''}</div>
+                            <p class="font-bold text-gray-800">${i.name}</p>
+                            <p class="text-xs text-gray-500">${i.quantity} @ ${window.formatCurrency(i.price)}</p>
+                            ${i.flavors && i.flavors.length > 0 ? `<div class="text-[11px] text-indigo-600 mt-1 italic">Flavors: ${i.flavors.join(', ')}</div>` : ''}
+                            ${i.toppings && i.toppings.length > 0 ? `<div class="text-[11px] text-green-600 mt-1 italic">Toppings: ${i.toppings.join(', ')}</div>` : ''}
                         </div>
-                        <div class="flex flex-col items-end space-y-2">
-                            <div class="text-xl font-extrabold text-primary">${window.formatCurrency(itemTotal)}</div>
-                            ${item.isFlavorRequired ? `<button onclick="window.openToppingModal(${item.id})" class="text-sm px-3 py-2 rounded-xl bg-yellow-400 text-gray-800 font-bold shadow-md">Topping</button>` : ''}
+                        <div class="text-right">
+                            <p class="font-bold text-primary text-lg">${window.formatCurrency(i.price * i.quantity)}</p>
+                            ${i.isFlavorRequired ? `<button onclick="window.openToppingModal(${i.id})" class="text-[10px] mt-1 px-2 py-1 bg-yellow-400 font-bold rounded shadow-sm text-gray-800">TOPPINGS</button>` : ''}
                         </div>
                     </div>
-                    <div class="flex justify-end space-x-2 mt-3 pt-3 border-t border-gray-200">
-                        <button onclick="window.decrementQuantity(${index})" class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-extrabold">-</button>
-                        <button onclick="window.incrementQuantity(${index})" class="w-10 h-10 rounded-xl bg-green-100 text-green-600 font-extrabold">+</button>
-                        <button onclick="window.removeItem(${index})" class="px-3 rounded-xl bg-red-500 text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                    <div class="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-50">
+                        <button onclick="window.incrementQuantityInPlace(${idx}, -1)" class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-200 transition font-bold">-</button>
+                        <button onclick="window.incrementQuantityInPlace(${idx}, 1)" class="w-8 h-8 rounded bg-gray-100 text-green-500 hover:bg-green-200 transition font-bold">+</button>
+                        <button onclick="window.activeCart.splice(${idx},1); window.updateCartInFirestore(window.activeCart)" class="w-8 h-8 rounded bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition">X</button>
                     </div>
-                `;
-                list.appendChild(listItem);
-            });
-            document.getElementById('subtotal-amount').textContent = window.formatCurrency(subtotal);
-            document.getElementById('total-amount').textContent = window.formatCurrency(subtotal);
+                </div>`;
+            }).join('');
+            document.getElementById('subtotal-amount').textContent = window.formatCurrency(sub);
+            document.getElementById('total-amount').textContent = window.formatCurrency(sub);
             document.getElementById('checkout-btn').disabled = false;
             document.getElementById('clear-order-btn').disabled = false;
         };
 
-        window.incrementQuantity = (index) => {
-            window.activeCart[index].quantity += 1;
-            updateCartInFirestore(window.activeCart);
-        };
-        window.decrementQuantity = (index) => {
-            if (window.activeCart[index].quantity > 1) {
-                window.activeCart[index].quantity -= 1;
-            } else {
-                window.activeCart.splice(index, 1);
-            }
-            updateCartInFirestore(window.activeCart);
-        };
-        window.removeItem = (index) => {
-            window.activeCart.splice(index, 1);
-            updateCartInFirestore(window.activeCart);
+        window.incrementQuantityInPlace = (idx, amt) => {
+            window.activeCart[idx].quantity += amt;
+            if (window.activeCart[idx].quantity <= 0) window.activeCart.splice(idx, 1);
+            window.updateCartInFirestore(window.activeCart);
         };
 
-        // --- PAYMENT & RECEIPT FUNCTIONS ---
+        window.getOrderDocRef = () => (window.db && window.userId) ? doc(window.db, `artifacts/${window.appId}/users/${window.userId}/activeOrders/current`) : null;
 
+        window.setupCartListener = () => {
+            const docRef = window.getOrderDocRef();
+            if (!docRef) return;
+            onSnapshot(docRef, (snap) => {
+                window.activeCart = snap.exists() ? (snap.data().items || []) : [];
+                window.updateCartDisplay();
+            });
+        };
+
+        window.updateCartInFirestore = async (cart) => {
+            const docRef = window.getOrderDocRef();
+            if (docRef) await setDoc(docRef, { items: cart });
+            else window.updateCartDisplay();
+        };
+
+        window.initFirebaseAndAuth = async () => {
+            try {
+                if (!window.firebaseConfig || Object.keys(window.firebaseConfig).length === 0) {
+                    window.updateCartDisplay(); return;
+                }
+                window.firebaseApp = initializeApp(window.firebaseConfig);
+                window.db = getFirestore(window.firebaseApp);
+                window.auth = getAuth(window.firebaseApp);
+                if (window.initialAuthToken) await signInWithCustomToken(window.auth, window.initialAuthToken);
+                else await signInAnonymously(window.auth);
+                onAuthStateChanged(window.auth, (user) => {
+                    document.getElementById('loading-auth').classList.add('hidden');
+                    if (user) {
+                        window.userId = user.uid;
+                        const display = document.getElementById('user-id-display');
+                        if(display) {
+                            display.classList.remove('hidden');
+                            display.querySelector('span').textContent = user.uid;
+                        }
+                        window.setupCartListener();
+                    }
+                });
+            } catch (e) { console.error(e); window.updateCartDisplay(); }
+        };
+
+        // Payment Handlers
         window.checkout = () => {
-            if (window.activeCart.length === 0) return;
-            currentOrderTotal = window.activeCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            currentOrderTotal = window.activeCart.reduce((s,i) => s + (i.price*i.quantity), 0);
             document.getElementById('payment-modal-total').textContent = window.formatCurrency(currentOrderTotal);
-            document.getElementById('amount-tendered').value = '';
-            selectedPaymentMethod = null;
-            document.getElementById('tendered-input-section').classList.add('hidden');
-            document.getElementById('complete-sale-btn').disabled = true;
-            document.querySelectorAll('.payment-method-btn').forEach(btn => btn.classList.remove('payment-method-selected'));
+            ['Currency', 'Debit', 'Credit', 'Transfer'].forEach(m => {
+                const el = document.getElementById(`pay-${m}`);
+                if(el) el.value = '';
+                paymentMethods[m] = 0;
+            });
+            window.calculateSplitChange();
             document.getElementById('payment-modal').classList.remove('hidden');
         };
 
-        window.selectPaymentMethod = (method) => {
-            selectedPaymentMethod = method;
-            document.querySelectorAll('.payment-method-btn').forEach(btn => {
-                btn.classList.remove('payment-method-selected');
-                if (btn.dataset.method === method) btn.classList.add('payment-method-selected');
+        window.calculateSplitChange = () => {
+            let totalTendered = 0;
+            ['Currency', 'Debit', 'Credit', 'Transfer'].forEach(m => {
+                const val = parseFloat(document.getElementById(`pay-${m}`).value) || 0;
+                paymentMethods[m] = val;
+                totalTendered += val;
             });
-            const inputSection = document.getElementById('tendered-input-section');
-            if (method === 'Currency') inputSection.classList.remove('hidden');
-            else inputSection.classList.add('hidden');
-            window.calculateChange();
-        };
-
-        window.calculateChange = () => {
-            const inputVal = parseFloat(document.getElementById('amount-tendered').value) || 0;
-            let tenderedAmount = selectedPaymentMethod === 'Currency' ? inputVal : currentOrderTotal;
-            const change = tenderedAmount - currentOrderTotal;
-            document.getElementById('tendered-total').textContent = window.formatCurrency(tenderedAmount);
+            const diff = totalTendered - currentOrderTotal;
+            const remaining = Math.max(0, currentOrderTotal - totalTendered);
+            document.getElementById('tendered-total').textContent = window.formatCurrency(totalTendered);
+            document.getElementById('payment-remaining').textContent = window.formatCurrency(remaining);
             const changeDueEl = document.getElementById('change-due');
-            changeDueEl.textContent = window.formatCurrency(Math.max(0, change));
-            if (tenderedAmount >= currentOrderTotal && selectedPaymentMethod) {
-                document.getElementById('complete-sale-btn').disabled = false;
-                changeDueEl.classList.replace('text-red-500', 'text-green-600');
-            } else {
-                document.getElementById('complete-sale-btn').disabled = true;
-                changeDueEl.classList.replace('text-green-600', 'text-red-500');
-            }
+            changeDueEl.textContent = window.formatCurrency(Math.max(0, diff));
+            document.getElementById('complete-sale-btn').disabled = totalTendered < currentOrderTotal;
         };
 
         window.completeSale = () => {
-            const tendered = selectedPaymentMethod === 'Currency' ? parseFloat(document.getElementById('amount-tendered').value) : currentOrderTotal;
-            const change = tendered - currentOrderTotal;
+            let totalTendered = 0;
+            Object.keys(paymentMethods).forEach(k => totalTendered += paymentMethods[k]);
             
-            const now = new Date();
-            document.getElementById('receipt-date').textContent = `Date: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+            document.getElementById('receipt-date').textContent = new Date().toLocaleString();
             document.getElementById('receipt-order-no').textContent = `Order: #${document.getElementById('order-number-display').textContent}`;
             document.getElementById('receipt-total').textContent = window.formatCurrency(currentOrderTotal);
-            document.getElementById('receipt-payment-method').textContent = selectedPaymentMethod;
-            document.getElementById('receipt-tendered').textContent = window.formatCurrency(tendered);
-            document.getElementById('receipt-change').textContent = window.formatCurrency(Math.max(0, change));
-
-            const listContainer = document.getElementById('receipt-items-list');
-            listContainer.innerHTML = window.activeCart.map(item => `
-                <div class="flex justify-between">
-                    <span>${item.quantity}x ${item.name}</span>
-                    <span>${window.formatCurrency(item.price * item.quantity)}</span>
-                </div>
-                ${item.flavors.length > 0 ? `<div class="text-xs italic ml-4">- ${item.flavors.join(', ')}</div>` : ''}
-            `).join('');
-
+            document.getElementById('receipt-tendered').textContent = window.formatCurrency(totalTendered);
+            document.getElementById('receipt-change').textContent = window.formatCurrency(Math.max(0, totalTendered - currentOrderTotal));
+            
+            let methodsHtml = '';
+            Object.entries(paymentMethods).forEach(([method, amount]) => {
+                if(amount > 0) methodsHtml += `<div class="flex justify-between text-xs"><span>${method}:</span><span>${window.formatCurrency(amount)}</span></div>`;
+            });
+            document.getElementById('receipt-payment-methods').innerHTML = methodsHtml;
+            
+            document.getElementById('receipt-items-list').innerHTML = window.activeCart.map(i => {
+                let details = '';
+                if (i.flavors && i.flavors.length > 0) details += `<div class="text-[10px] italic ml-4">- Flavors: ${i.flavors.join(', ')}</div>`;
+                if (i.toppings && i.toppings.length > 0) details += `<div class="text-[10px] italic ml-4">- Toppings: ${i.toppings.join(', ')}</div>`;
+                
+                return `
+                <div class="mb-1">
+                    <div class="flex justify-between">
+                        <span>${i.quantity}x ${i.name}</span>
+                        <span>${window.formatCurrency(i.price*i.quantity)}</span>
+                    </div>
+                    ${details}
+                </div>`;
+            }).join('');
+            
             window.activeCart = [];
-            updateCartInFirestore(window.activeCart);
+            window.updateCartInFirestore([]);
             document.getElementById('payment-modal').classList.add('hidden');
             document.getElementById('receipt-modal').classList.remove('hidden');
         };
 
-        window.printReceipt = () => {
-            window.print();
-        };
-
-        window.closeReceiptModal = () => {
-            document.getElementById('receipt-modal').classList.add('hidden');
-        };
-
+        window.printReceipt = () => window.print();
+        window.closeReceiptModal = () => document.getElementById('receipt-modal').classList.add('hidden');
         window.closePaymentModal = () => document.getElementById('payment-modal').classList.add('hidden');
+        window.clearOrder = () => { window.activeCart = []; window.updateCartInFirestore([]); };
+        window.changeView = () => { currentPage = currentPage === 'POS' ? 'REPORTS' : 'POS'; window.renderApp(); };
+        window.changeReportRange = (r) => { currentReportRange = r; window.renderApp(); };
+        
+        window.updateKeyMetrics = (range) => {
+            const m = REPORT_METRICS[range];
+            if (!m) return;
+            const periodText = document.getElementById('revenue-period-text');
+            if(periodText) periodText.textContent = range === 'DAILY' ? 'Revenue (Today)' : (range === 'WEEKLY' ? 'Revenue (This Week)' : 'Revenue (Last 30 Days)');
+            const revVal = document.getElementById('revenue-value');
+            if(revVal) revVal.textContent = window.formatCurrency(m.revenue);
+            const procVal = document.getElementById('orders-processed-value');
+            if(procVal) procVal.textContent = m.orders;
+        };
 
-        // --- OTHER MODAL LOGIC ---
+        window.renderApp = () => {
+            const isPos = currentPage === 'POS';
+            document.getElementById('pos-view').classList.toggle('hidden', !isPos);
+            document.getElementById('reports-view').classList.toggle('hidden', isPos);
+            document.getElementById('view-toggle-button').textContent = isPos ? 'Reports' : 'Sale';
+            if (isPos) { window.renderCategories(); window.renderMenuItems(window.currentCategory); }
+            else if (currentPage === 'REPORTS') {
+                window.updateKeyMetrics(currentReportRange);
+                const container = d3.select("#bar-chart-container"); container.select("svg").remove();
+                const data = currentReportRange==='WEEKLY' ? WEEKLY_SALES_DATA : currentReportRange==='MONTHLY' ? MONTHLY_SALES_DATA : HOURLY_SALES_DATA;
+                const margin = {top: 20, right: 20, bottom: 40, left: 40}, width = container.node().clientWidth - 60, height = 240;
+                const svg = container.append("svg").attr("width", width+60).attr("height", 300).append("g").attr("transform", `translate(40,20)`);
+                const xKey = currentReportRange==='DAILY' ? 'hour' : currentReportRange==='WEEKLY' ? 'day' : 'period';
+                const x = d3.scaleBand().domain(data.map(d=>d[xKey])).range([0,width]).padding(0.1);
+                const y = d3.scaleLinear().domain([0, d3.max(data, d=>d.sales)]).range([height, 0]);
+                svg.selectAll("rect").data(data).enter().append("rect").attr("x", d=>x(d[xKey])).attr("y", d=>y(d.sales)).attr("width", x.bandwidth()).attr("height", d=>height-y(d.sales)).attr("fill", "#65a30d");
+                svg.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x));
+                svg.append("g").call(d3.axisLeft(y));
+            }
+        };
 
         window.openFlavorModal = (item) => {
-            itemPendingFlavor = item;
-            pendingFlavors = Array(item.scoops).fill(null);
-            currentScoopIndex = 0;
-            document.getElementById('flavor-modal-item-name').textContent = `${item.name} (${item.scoops} Scoops)`;
-            const indicatorsContainer = document.getElementById('scoop-indicators');
-            const gridContainer = document.getElementById('single-flavor-grid');
-            indicatorsContainer.innerHTML = '';
-            for (let i = 0; i < item.scoops; i++) {
-                const btn = document.createElement('button');
-                btn.id = `scoop-indicator-${i}`;
-                btn.onclick = () => window.selectScoop(i);
-                btn.className = 'scoop-indicator-button p-2 w-28 h-16 rounded-lg border-2 bg-gray-200 flex flex-col justify-center items-center';
-                btn.innerHTML = `<div class="text-sm font-semibold">Scoop ${i+1}</div><div class="text-xs italic text-gray-400">Not Set</div>`;
-                indicatorsContainer.appendChild(btn);
-            }
-            const flavorOptions = ITEM_FLAVOR_MAPPING[item.name] || SCOOP_FLAVORS;
-            gridContainer.innerHTML = window.generateFlavorGrid(flavorOptions);
+            itemPendingFlavor = item; pendingFlavors = Array(item.scoops).fill(null); currentScoopIndex = 0;
+            document.getElementById('flavor-modal-item-name').textContent = item.name;
+            const inds = document.getElementById('scoop-indicators');
+            inds.innerHTML = Array.from({length:item.scoops}, (_,i) => `
+                <button id="scoop-indicator-${i}" onclick="window.selectScoop(${i})" class="p-2 border rounded bg-gray-100 text-xs min-w-[70px]">
+                    Scoop ${i+1}<br><span class="italic text-gray-400">None</span>
+                </button>
+            `).join('');
+            const opts = ITEM_FLAVOR_MAPPING[item.name] || SCOOP_FLAVORS;
+            document.getElementById('single-flavor-grid').innerHTML = opts.map(f => `<button onclick="window.selectFlavor('${f}')" class="p-2 border rounded hover:bg-green-50 text-xs aspect-square">${f}</button>`).join('') + 
+                `<button onclick="window.closeFlavorModal()" class="border-2 border-red-200 bg-red-100 text-red-700 font-bold rounded p-2">CANCEL</button>` +
+                `<button onclick="window.confirmFlavors()" class="border-2 border-green-200 bg-green-50 text-green-700 font-bold rounded p-2">ADD ORDER</button>`;
             window.selectScoop(0);
             document.getElementById('flavor-modal').classList.remove('hidden');
         };
 
-        window.generateFlavorGrid = (options) => {
-            let html = options.map(f => `<button onclick="window.selectFlavor('${f}')" class="p-2 border rounded-lg bg-white hover:bg-primary/20 aspect-square text-xs">${f}</button>`).join('');
-            html += `<button onclick="window.closeFlavorModal()" class="aspect-square rounded-lg border-2 border-red-500 bg-red-100 text-red-700 font-bold">CANCEL</button>`;
-            html += `<button onclick="window.confirmFlavors()" class="aspect-square rounded-lg border-2 border-green-500 bg-green-100 text-green-700 font-bold">ADD</button>`;
-            return html;
+        window.selectScoop = (idx) => { currentScoopIndex = idx; document.querySelectorAll('#scoop-indicators button').forEach((b,i) => b.classList.toggle('ring-2', i===idx)); };
+        window.selectFlavor = (f) => { 
+            pendingFlavors[currentScoopIndex] = f; 
+            const b = document.getElementById(`scoop-indicator-${currentScoopIndex}`);
+            if(b) { b.querySelector('span').textContent = f; b.classList.add('bg-green-100'); }
+            let next = pendingFlavors.indexOf(null); 
+            if (next !== -1) window.selectScoop(next); 
         };
 
-        window.selectScoop = (index) => {
-            currentScoopIndex = index;
-            document.querySelectorAll('.scoop-indicator-button').forEach((btn, i) => {
-                btn.classList.toggle('ring-4', i === index);
-                btn.classList.toggle('ring-primary', i === index);
-            });
-        };
-
-        window.selectFlavor = (flavor) => {
-            pendingFlavors[currentScoopIndex] = flavor;
-            const indicator = document.getElementById(`scoop-indicator-${currentScoopIndex}`);
-            indicator.classList.add('bg-green-100', 'border-green-400');
-            indicator.querySelector('.italic').textContent = flavor;
-            let nextIndex = pendingFlavors.findIndex(f => f === null);
-            if (nextIndex !== -1) window.selectScoop(nextIndex);
-        };
-
-        window.confirmFlavors = () => {
-            if (pendingFlavors.includes(null)) {
-                document.getElementById('flavor-error').textContent = "Select all flavors.";
-                document.getElementById('flavor-error').classList.remove('hidden');
-                return;
-            }
-            itemPendingFlavor.flavors = pendingFlavors;
-            itemPendingFlavor.id = Date.now();
-            window.activeCart.push(itemPendingFlavor);
-            updateCartInFirestore(window.activeCart);
-            window.closeFlavorModal();
+        window.confirmFlavors = () => { 
+            if (pendingFlavors.includes(null)) return;
+            itemPendingFlavor.flavors = [...pendingFlavors]; 
+            window.activeCart.push(itemPendingFlavor); 
+            window.updateCartInFirestore(window.activeCart); 
+            window.closeFlavorModal(); 
         };
 
         window.closeFlavorModal = () => document.getElementById('flavor-modal').classList.add('hidden');
-
-        window.openToppingModal = (id) => {
-            itemPendingToppingsId = id;
+        window.openToppingModal = (id) => { 
+            itemPendingToppingsId = id; 
             const item = window.activeCart.find(i => i.id === id);
+            if(!item) return;
             pendingToppings = [...(item.toppings || [])];
             document.getElementById('topping-modal-item-name').textContent = item.name;
-            const grid = document.getElementById('topping-selection-grid');
-            grid.innerHTML = TOPPINGS.map(t => `<button onclick="window.toggleTopping(event, '${t}')" class="p-3 border rounded-lg ${pendingToppings.includes(t) ? 'bg-indigo-200' : 'bg-white'} text-xs aspect-square">${t}</button>`).join('');
-            document.getElementById('topping-modal').classList.remove('hidden');
+            document.getElementById('topping-selection-grid').innerHTML = TOPPINGS.map(t => `
+                <button onclick="window.toggleTopping(event, '${t}')" class="p-3 border rounded-lg ${pendingToppings.includes(t) ? 'bg-indigo-200' : 'bg-white'} text-xs aspect-square transition">${t}</button>
+            `).join('');
+            document.getElementById('topping-modal').classList.remove('hidden'); 
         };
-
         window.toggleTopping = (e, t) => {
             const idx = pendingToppings.indexOf(t);
-            if (idx > -1) pendingToppings.splice(idx, 1);
-            else pendingToppings.push(t);
-            e.target.classList.toggle('bg-indigo-200');
+            if (idx > -1) { pendingToppings.splice(idx, 1); e.target.classList.remove('bg-indigo-200'); e.target.classList.add('bg-white'); }
+            else { pendingToppings.push(t); e.target.classList.add('bg-indigo-200'); e.target.classList.remove('bg-white'); }
         };
-
+        
         window.confirmToppings = () => {
             const idx = window.activeCart.findIndex(i => i.id === itemPendingToppingsId);
-            window.activeCart[idx].toppings = pendingToppings;
-            window.activeCart[idx].price = window.activeCart[idx].basePrice + (pendingToppings.length * TOPPING_PRICE);
-            updateCartInFirestore(window.activeCart);
-            document.getElementById('topping-modal').classList.add('hidden');
+            if (idx !== -1) {
+                window.activeCart[idx].toppings = [...pendingToppings];
+                window.activeCart[idx].price = window.activeCart[idx].basePrice + (pendingToppings.length * TOPPING_PRICE);
+                window.updateCartInFirestore(window.activeCart);
+            }
+            window.closeToppingModal();
         };
-
         window.closeToppingModal = () => document.getElementById('topping-modal').classList.add('hidden');
 
-        window.clearOrder = () => {
-            window.activeCart = [];
-            updateCartInFirestore(window.activeCart);
-        };
-
-        window.changeView = () => {
-            currentPage = (currentPage === 'POS') ? 'REPORTS' : 'POS';
-            window.renderApp();
-        };
-
-        window.changeReportRange = (range) => {
-            currentReportRange = range;
-            window.renderApp();
-        };
-
-        window.renderApp = () => {
-            const pos = document.getElementById('pos-view');
-            const rep = document.getElementById('reports-view');
-            const btn = document.getElementById('view-toggle-button');
-            if (currentPage === 'POS') {
-                pos.classList.remove('hidden'); rep.classList.add('hidden'); btn.textContent = 'Reports';
-                window.renderCategories(); window.renderMenuItems(window.currentCategory);
-            } else {
-                pos.classList.add('hidden'); rep.classList.remove('hidden'); btn.textContent = 'Sale';
-                window.updateKeyMetrics(currentReportRange);
-                const data = currentReportRange === 'WEEKLY' ? WEEKLY_SALES_DATA : (currentReportRange === 'MONTHLY' ? MONTHLY_SALES_DATA : HOURLY_SALES_DATA);
-                renderBarChart(data, currentReportRange);
-            }
-        };
-
-        window.updateKeyMetrics = (range) => {
-            const m = REPORT_METRICS[range];
-            document.getElementById('revenue-period-text').textContent = range === 'DAILY' ? 'Revenue (Today)' : (range === 'WEEKLY' ? 'Revenue (This Week)' : 'Revenue (Last 30 Days)');
-            document.getElementById('revenue-value').textContent = window.formatCurrency(m.revenue);
-            document.getElementById('orders-processed-value').textContent = m.orders;
-        };
-
-        const renderBarChart = (data, range) => {
-            const container = d3.select("#bar-chart-container");
-            container.select("svg").remove();
-            const margin = {top: 20, right: 20, bottom: 40, left: 40}, width = container.node().clientWidth - margin.left - margin.right, height = 300 - margin.top - margin.bottom;
-            const svg = container.append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-            const xKey = range === 'DAILY' ? 'hour' : (range === 'WEEKLY' ? 'day' : 'period');
-            const x = d3.scaleBand().domain(data.map(d => d[xKey])).range([0, width]).padding(0.1);
-            const y = d3.scaleLinear().domain([0, d3.max(data, d => d.sales)]).range([height, 0]);
-            svg.selectAll(".bar").data(data).enter().append("rect").attr("class", "bar").attr("x", d => x(d[xKey])).attr("y", d => y(d.sales)).attr("width", x.bandwidth()).attr("height", d => height - y(d.sales)).attr("fill", "#65a30d");
-            svg.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x));
-            svg.append("g").call(d3.axisLeft(y));
-        };
-
-        window.showMessageBox = (m, c) => {
-            const b = document.getElementById('message-box');
-            b.textContent = m; b.className = `mt-4 p-3 rounded-lg text-center font-semibold ${c}`;
-            b.classList.remove('hidden'); setTimeout(() => b.classList.add('hidden'), 3000);
-        };
-
-        const updateClock = () => {
+        window.updateClock = () => {
             const now = new Date();
-            document.getElementById('date-time-display').innerHTML = `<span class="text-lg font-bold">${now.toLocaleTimeString()}</span><br><span class="text-xs">${now.toLocaleDateString()}</span>`;
-            const orderNo = `01${pad2(now.getFullYear()%100)}${pad2(now.getMonth()+1)}${pad2(now.getDate())}${pad2(now.getHours())}${pad2(now.getMinutes())}`;
-            document.getElementById('order-number-display').textContent = orderNo;
+            const dateEl = document.getElementById('date-time-display');
+            if (dateEl) {
+                dateEl.innerHTML = `<span class="text-lg font-bold">${now.toLocaleTimeString()}</span><br><span class="text-xs text-gray-500">${now.toLocaleDateString()}</span>`;
+            }
+            const orderNo = `01${window.pad2(now.getFullYear()%100)}${window.pad2(now.getMonth()+1)}${window.pad2(now.getDate())}${window.pad2(now.getHours())}${window.pad2(now.getMinutes())}`;
+            const orderEl = document.getElementById('order-number-display');
+            if (orderEl) orderEl.textContent = orderNo;
         };
 
-        const getOrderDocRef = () => (window.db && window.userId) ? doc(window.db, `artifacts/${window.appId}/users/${window.userId}/activeOrders/current`) : null;
-
-        // Initialization
         window.onload = () => {
-            updateClock();
-            setInterval(updateClock, 1000);
-            initFirebaseAndAuth();
+            window.updateClock(); 
+            setInterval(window.updateClock, 1000);
+            window.initFirebaseAndAuth();
             window.renderApp();
         };
     </script>
